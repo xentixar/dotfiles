@@ -56,9 +56,13 @@ if [ -d "$SCRIPT_DIR" ]; then
     for script in "$SCRIPT_DIR"/*.sh; do
         if [ -f "$script" ]; then
             script_name=$(basename "$script")
-            echo -n "  Installing $script_name... "
+            base_name="${script_name%.sh}"
+            echo -n "  Installing $script_name and $base_name... "
             sudo cp -f "$script" "/usr/local/bin/$script_name"
             sudo chmod +x "/usr/local/bin/$script_name"
+            # Also install without extension for convenience
+            sudo cp -f "$script" "/usr/local/bin/$base_name"
+            sudo chmod +x "/usr/local/bin/$base_name"
             echo -e "${GREEN}✓${NC}"
         fi
     done

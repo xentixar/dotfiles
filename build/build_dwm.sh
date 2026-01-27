@@ -42,6 +42,25 @@ echo -e "${YELLOW}Building and installing DWM...${NC}"
 if sudo make clean install; then
     echo ""
     echo -e "${GREEN}✓${NC} DWM built and installed successfully!"
+
+    # Install dwm.desktop for display managers
+    echo -e "${YELLOW}Installing dwm desktop entry...${NC}"
+    DESKTOP_DIR="/usr/share/xsessions"
+    DESKTOP_FILE="$DESKTOP_DIR/dwm.desktop"
+    if [ ! -d "$DESKTOP_DIR" ]; then
+        sudo mkdir -p "$DESKTOP_DIR"
+    fi
+    sudo tee "$DESKTOP_FILE" > /dev/null <<'EOF'
+[Desktop Entry]
+Encoding=UTF-8
+Name=dwm
+Comment=Dynamic Window Manager
+Exec=/usr/local/bin/dwm
+TryExec=/usr/local/bin/dwm
+Type=XSession
+DesktopNames=dwm
+EOF
+    echo -e "  ${GREEN}✓${NC} Installed $DESKTOP_FILE"
 else
     echo ""
     echo -e "${RED}✗${NC} DWM build failed"

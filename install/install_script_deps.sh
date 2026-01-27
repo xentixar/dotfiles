@@ -39,7 +39,6 @@ echo ""
 # Script dependencies - different names for different package managers
 if [ "$PKG_MANAGER" = "apt" ]; then
     SCRIPT_PACKAGES=(
-        "neovim"
         "xclip"
         "scrot"
         "wmctrl"
@@ -49,7 +48,6 @@ if [ "$PKG_MANAGER" = "apt" ]; then
     )
 elif [ "$PKG_MANAGER" = "pacman" ]; then
     SCRIPT_PACKAGES=(
-        "neovim"
         "xclip"
         "scrot"
         "wmctrl"
@@ -59,7 +57,6 @@ elif [ "$PKG_MANAGER" = "pacman" ]; then
     )
 elif [ "$PKG_MANAGER" = "dnf" ]; then
     SCRIPT_PACKAGES=(
-        "neovim"
         "xclip"
         "scrot"
         "wmctrl"
@@ -85,6 +82,29 @@ for pkg in "${SCRIPT_PACKAGES[@]}"; do
         echo -e "${YELLOW}⚠${NC} (may already be installed or not available)"
     fi
 done
+
+# Install latest Neovim (prebuilt tarball) to /opt/nvim and symlink to /usr/local/bin
+echo ""
+echo -e "${YELLOW}Installing latest Neovim...${NC}"
+NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz"
+TMP_DIR="$(mktemp -d)"
+if command -v curl &> /dev/null; then
+    DOWNLOADER="curl -L"
+else
+    DOWNLOADER="wget -O-"
+fi
+echo -e "  Downloading Neovim from ${NVIM_URL}..."
+if $DOWNLOADER "$NVIM_URL" | tar xz -C "$TMP_DIR"; then
+    echo -e "  ${GREEN}✓${NC} Downloaded and extracted Neovim"
+    sudo rm -rf /opt/nvim
+    sudo mkdir -p /opt
+    sudo mv "$TMP_DIR/nvim-linux64" /opt/nvim
+    sudo ln -sf /opt/nvim/bin/nvim /usr/local/bin/nvim
+    echo -e "  ${GREEN}✓${NC} Installed Neovim to /opt/nvim and linked /usr/local/bin/nvim"
+else
+    echo -e "  ${YELLOW}⚠${NC} Failed to download or extract Neovim; keeping any existing nvim installation."
+fi
+rm -rf "$TMP_DIR"
 
 # Check for NVIDIA GPU tools (optional)
 echo ""
@@ -118,9 +138,13 @@ if [ -d "$SCRIPT_DIR" ]; then
             script_name=$(basename "$script")
             # Skip install_scripts.sh itself
             if [ "$script_name" != "install_scripts.sh" ]; then
-                echo -n "  Installing $script_name... "
+                base_name="${script_name%.sh}"
+                echo -n "  Installing $script_name and $base_name... "
                 sudo cp -f "$script" "/usr/local/bin/$script_name"
                 sudo chmod +x "/usr/local/bin/$script_name"
+                # Also install without extension for convenience
+                sudo cp -f "$script" "/usr/local/bin/$base_name"
+                sudo chmod +x "/usr/local/bin/$base_name"
                 echo -e "${GREEN}✓${NC}"
                 INSTALLED=$((INSTALLED + 1))
             fi
