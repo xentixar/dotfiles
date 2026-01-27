@@ -84,8 +84,6 @@ config/st/*.o
 config/st/*.rej
 config/st/*.orig
 config/dmenu/dmenu
-config/dmenu/dmenu_path
-config/dmenu/dmenu_run
 config/dmenu/*.o
 config/dmenu/*.rej
 config/dmenu/*.orig
