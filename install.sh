@@ -136,6 +136,59 @@ if [[ "$set_zsh" =~ ^[Yy]$ ]]; then
     fi
 fi
 
+# Ask about development tools installation
+echo ""
+echo -e "${YELLOW}Development Tools Installation${NC}"
+read -p "Install development tools (PHP 8.4, Composer, Node.js via NVM, VSCode)? [y/N]: " install_dev_tools
+if [[ "$install_dev_tools" =~ ^[Yy]$ ]]; then
+    INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/install"
+    if [ -d "$INSTALL_DIR" ]; then
+        echo ""
+        echo -e "${YELLOW}Choose installation method:${NC}"
+        echo "  1) Install all development tools"
+        echo "  2) Choose individual tools"
+        read -p "Enter choice [1-2] (default: 1): " install_choice
+        install_choice=${install_choice:-1}
+        
+        if [ "$install_choice" = "1" ]; then
+            if [ -f "$INSTALL_DIR/install_all.sh" ]; then
+                bash "$INSTALL_DIR/install_all.sh"
+            else
+                echo -e "${RED}✗${NC} install_all.sh not found"
+            fi
+        else
+            echo ""
+            echo -e "${YELLOW}Available tools:${NC}"
+            echo "  1) PHP 8.4"
+            echo "  2) Composer"
+            echo "  3) Node.js via NVM"
+            echo "  4) VSCode"
+            read -p "Enter tool numbers (comma-separated, e.g., 1,2,3): " tool_numbers
+            
+            IFS=',' read -ra TOOLS <<< "$tool_numbers"
+            for tool_num in "${TOOLS[@]}"; do
+                case $tool_num in
+                    1)
+                        [ -f "$INSTALL_DIR/install_php84.sh" ] && bash "$INSTALL_DIR/install_php84.sh"
+                        ;;
+                    2)
+                        [ -f "$INSTALL_DIR/install_composer.sh" ] && bash "$INSTALL_DIR/install_composer.sh"
+                        ;;
+                    3)
+                        [ -f "$INSTALL_DIR/install_nodejs_nvm.sh" ] && bash "$INSTALL_DIR/install_nodejs_nvm.sh"
+                        ;;
+                    4)
+                        [ -f "$INSTALL_DIR/install_vscode.sh" ] && bash "$INSTALL_DIR/install_vscode.sh"
+                        ;;
+                esac
+            done
+        fi
+    else
+        echo -e "${YELLOW}⚠${NC} install/ directory not found"
+    fi
+    echo ""
+fi
+
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║   Setup Completed!                    ║${NC}"
@@ -144,7 +197,6 @@ echo ""
 echo -e "${BLUE}Next steps:${NC}"
 echo "  1. Run ./restore.sh to restore your dotfiles"
 echo "  2. Rebuild suckless tools if needed:"
-echo "     cd ~/.config/dwm && sudo make clean install"
-echo "     cd ~/.config/st && sudo make clean install"
-echo "     cd ~/.config/dmenu && sudo make clean install"
-echo "     cd ~/.config/slstatus && sudo make clean install"
+echo "     ./build/build_all.sh (or individual: ./build/build_dwm.sh, etc.)"
+echo "  3. Install development tools:"
+echo "     ./install/install_all.sh (or individual scripts)"
