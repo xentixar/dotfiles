@@ -8,6 +8,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
@@ -36,155 +37,150 @@ fi
 echo -e "${YELLOW}Detected package manager: $PKG_MANAGER${NC}"
 echo ""
 
-# Essential packages
-ESSENTIAL_PACKAGES=(
-    "git"
-    "curl"
-    "wget"
-    "zsh"
-    "vim"
-    "tmux"
-    "build-essential"
-    "make"
-    "gcc"
-)
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+INSTALL_DIR="$SCRIPT_DIR/install"
 
-# Development tools
-DEV_PACKAGES=(
-    "nodejs"
-    "npm"
-    "python3"
-    "python3-pip"
-)
-
-# Suckless tools dependencies
-SUCKLESS_PACKAGES=(
-    "libx11-dev"
-    "libxft-dev"
-    "libxinerama-dev"
-    "libxrandr-dev"
-    "libfreetype6-dev"
-    "libfontconfig1-dev"
-)
-
-# Function to install packages
-install_packages() {
-    local category=$1
-    shift
-    local packages=("$@")
-    
-    echo -e "${YELLOW}Installing $category packages...${NC}"
-    for pkg in "${packages[@]}"; do
-        if [ "$PKG_MANAGER" = "apt" ]; then
-            # Handle different package names for apt
-            case $pkg in
-                "build-essential")
-                    pkg_name="build-essential"
-                    ;;
-                "libx11-dev")
-                    pkg_name="libx11-dev"
-                    ;;
-                *)
-                    pkg_name="$pkg"
-                    ;;
-            esac
-        else
-            pkg_name="$pkg"
-        fi
-        
-        echo -n "  Installing $pkg_name... "
-        if $INSTALL_CMD "$pkg_name" &> /dev/null; then
-            echo -e "${GREEN}✓${NC}"
-        else
-            echo -e "${RED}✗${NC} (may already be installed or not available)"
-        fi
-    done
+# Function to extract title from script file (first comment line after shebang)
+get_script_title() {
+    local script_file="$1"
+    # Read first comment line (skip shebang and empty lines, get first # comment)
+    local title=$(grep -E "^# " "$script_file" 2>/dev/null | head -1 | sed 's/^# //')
+    if [ -z "$title" ]; then
+        # Fallback: use filename without extension
+        basename "$script_file" .sh
+    else
+        echo "$title"
+    fi
 }
 
-# Update package list
-echo -e "${YELLOW}Updating package list...${NC}"
-$UPDATE_CMD &> /dev/null
-echo -e "  ${GREEN}✓${NC} Package list updated"
-echo ""
+# Discover installation scripts
+declare -a SCRIPT_FILES
+declare -a SCRIPT_NAMES
+declare -A SELECTIONS
 
-# Install essential packages
-install_packages "Essential" "${ESSENTIAL_PACKAGES[@]}"
-echo ""
-
-# Ask about development tools
-read -p "Install development tools (nodejs, npm, python3)? [y/N]: " install_dev
-if [[ "$install_dev" =~ ^[Yy]$ ]]; then
-    install_packages "Development" "${DEV_PACKAGES[@]}"
-    echo ""
+if [ -d "$INSTALL_DIR" ]; then
+    # Find all install_*.sh files except install_all.sh
+    while IFS= read -r -d '' script; do
+        basename=$(basename "$script")
+        if [[ "$basename" != "install_all.sh" ]]; then
+            SCRIPT_FILES+=("$script")
+            SCRIPT_NAMES+=("$(get_script_title "$script")")
+            # Initialize selection to 0 (not selected)
+            SELECTIONS[${#SCRIPT_FILES[@]}]=0
+        fi
+    done < <(find "$INSTALL_DIR" -maxdepth 1 -name "install_*.sh" -type f -print0 | sort -z)
 fi
 
-# Ask about suckless tools dependencies
-read -p "Install dependencies for suckless tools (dwm, st, dmenu, slstatus)? [y/N]: " install_suckless
-if [[ "$install_suckless" =~ ^[Yy]$ ]]; then
-    install_packages "Suckless Tools" "${SUCKLESS_PACKAGES[@]}"
+# Add special option: Set zsh as default shell
+SPECIAL_OPTION_INDEX=$((${#SCRIPT_FILES[@]} + 1))
+SELECTIONS[$SPECIAL_OPTION_INDEX]=0
+
+# Function to display menu
+show_menu() {
     echo ""
+    echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
+    echo -e "${BLUE}║   Installation Selection Menu          ║${NC}"
+    echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
+    echo ""
+    echo -e "${CYAN}Select what to install (toggle with number, press Enter to proceed):${NC}"
+    echo ""
+    
+    # Display script options
+    for i in "${!SCRIPT_FILES[@]}"; do
+        local index=$((i + 1))
+        if [ "${SELECTIONS[$index]}" -eq 1 ]; then
+            echo -e "  ${GREEN}[✓]${NC} $index. ${SCRIPT_NAMES[$i]}"
+        else
+            echo -e "  ${YELLOW}[ ]${NC} $index. ${SCRIPT_NAMES[$i]}"
+        fi
+    done
+    
+    # Display special option
+    if [ "${SELECTIONS[$SPECIAL_OPTION_INDEX]}" -eq 1 ]; then
+        echo -e "  ${GREEN}[✓]${NC} $SPECIAL_OPTION_INDEX. Set zsh as default shell"
+    else
+        echo -e "  ${YELLOW}[ ]${NC} $SPECIAL_OPTION_INDEX. Set zsh as default shell"
+    fi
+    
+    echo ""
+    local max_option=$SPECIAL_OPTION_INDEX
+    echo -e "${CYAN}Press Enter to start installation, or type a number (1-$max_option) to toggle${NC}"
+}
+
+# Initial menu display
+show_menu
+
+# Interactive selection loop
+while true; do
+    read -p "> " input
+    
+    # If Enter is pressed, break the loop
+    if [ -z "$input" ]; then
+        break
+    fi
+    
+    # Validate input is a number
+    if [[ "$input" =~ ^[0-9]+$ ]]; then
+        local max_option=$SPECIAL_OPTION_INDEX
+        if [ "$input" -ge 1 ] && [ "$input" -le "$max_option" ]; then
+            # Toggle selection
+            if [ "${SELECTIONS[$input]}" -eq 1 ]; then
+                SELECTIONS[$input]=0
+            else
+                SELECTIONS[$input]=1
+            fi
+            show_menu
+        else
+            echo -e "${RED}Invalid input. Please enter a number between 1-$max_option or press Enter to proceed.${NC}"
+            sleep 1
+            show_menu
+        fi
+    else
+        local max_option=$SPECIAL_OPTION_INDEX
+        echo -e "${RED}Invalid input. Please enter a number between 1-$max_option or press Enter to proceed.${NC}"
+        sleep 1
+        show_menu
+    fi
+done
+
+# Check if anything is selected
+TOTAL_SELECTED=0
+local max_option=$SPECIAL_OPTION_INDEX
+for i in $(seq 1 $max_option); do
+    if [ "${SELECTIONS[$i]}" -eq 1 ]; then
+        TOTAL_SELECTED=$((TOTAL_SELECTED + 1))
+    fi
+done
+
+if [ "$TOTAL_SELECTED" -eq 0 ]; then
+    echo -e "${YELLOW}No items selected. Exiting.${NC}"
+    exit 0
 fi
 
-# Set zsh as default shell
-read -p "Set zsh as default shell? [y/N]: " set_zsh
-if [[ "$set_zsh" =~ ^[Yy]$ ]]; then
+echo ""
+echo -e "${BLUE}Starting installation...${NC}"
+echo ""
+
+# Install selected items
+for i in "${!SCRIPT_FILES[@]}"; do
+    local index=$((i + 1))
+    if [ "${SELECTIONS[$index]}" -eq 1 ]; then
+        echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        bash "${SCRIPT_FILES[$i]}"
+        echo ""
+    fi
+done
+
+# Handle special option: Set zsh as default shell
+if [ "${SELECTIONS[$SPECIAL_OPTION_INDEX]}" -eq 1 ]; then
+    echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${YELLOW}Setting zsh as default shell...${NC}"
     if command -v zsh &> /dev/null; then
         chsh -s $(which zsh)
         echo -e "  ${GREEN}✓${NC} Zsh set as default shell (restart terminal to apply)"
     else
-        echo -e "  ${RED}✗${NC} Zsh not installed"
-    fi
-fi
-
-# Ask about development tools installation
-echo ""
-echo -e "${YELLOW}Development Tools Installation${NC}"
-read -p "Install development tools (PHP 8.4, Composer, Node.js via NVM, VSCode)? [y/N]: " install_dev_tools
-if [[ "$install_dev_tools" =~ ^[Yy]$ ]]; then
-    INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/install"
-    if [ -d "$INSTALL_DIR" ]; then
-        echo ""
-        echo -e "${YELLOW}Choose installation method:${NC}"
-        echo "  1) Install all development tools"
-        echo "  2) Choose individual tools"
-        read -p "Enter choice [1-2] (default: 1): " install_choice
-        install_choice=${install_choice:-1}
-        
-        if [ "$install_choice" = "1" ]; then
-            if [ -f "$INSTALL_DIR/install_all.sh" ]; then
-                bash "$INSTALL_DIR/install_all.sh"
-            else
-                echo -e "${RED}✗${NC} install_all.sh not found"
-            fi
-        else
-            echo ""
-            echo -e "${YELLOW}Available tools:${NC}"
-            echo "  1) PHP 8.4"
-            echo "  2) Composer"
-            echo "  3) Node.js via NVM"
-            echo "  4) VSCode"
-            read -p "Enter tool numbers (comma-separated, e.g., 1,2,3): " tool_numbers
-            
-            IFS=',' read -ra TOOLS <<< "$tool_numbers"
-            for tool_num in "${TOOLS[@]}"; do
-                case $tool_num in
-                    1)
-                        [ -f "$INSTALL_DIR/install_php84.sh" ] && bash "$INSTALL_DIR/install_php84.sh"
-                        ;;
-                    2)
-                        [ -f "$INSTALL_DIR/install_composer.sh" ] && bash "$INSTALL_DIR/install_composer.sh"
-                        ;;
-                    3)
-                        [ -f "$INSTALL_DIR/install_nodejs_nvm.sh" ] && bash "$INSTALL_DIR/install_nodejs_nvm.sh"
-                        ;;
-                    4)
-                        [ -f "$INSTALL_DIR/install_vscode.sh" ] && bash "$INSTALL_DIR/install_vscode.sh"
-                        ;;
-                esac
-            done
-        fi
-    else
-        echo -e "${YELLOW}⚠${NC} install/ directory not found"
+        echo -e "  ${RED}✗${NC} Zsh not installed. Please install essential packages first."
     fi
     echo ""
 fi
