@@ -3,6 +3,21 @@
 # Script Dependencies Installation Script
 # Installs utilities required by dotfiles scripts (nvim, xclip, scrot, wmctrl, etc.)
 
+# Load version helpers (for Neovim version)
+SCRIPT_BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_BASE_DIR/version_utils.sh" ]; then
+    # shellcheck disable=SC1090
+    . "$SCRIPT_BASE_DIR/version_utils.sh"
+fi
+
+# Fallback get_version if version_utils.sh is unavailable
+if ! declare -f get_version >/dev/null 2>&1; then
+    get_version() {
+        # $1 = tool, $2 = default
+        echo "$2"
+    }
+fi
+
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -83,10 +98,16 @@ for pkg in "${SCRIPT_PACKAGES[@]}"; do
     fi
 done
 
-# Install latest Neovim (prebuilt tarball) to /opt/nvim and symlink to /usr/local/bin
+# Install Neovim (prebuilt tarball) to /opt/nvim and symlink to /usr/local/bin
 echo ""
-echo -e "${YELLOW}Installing latest Neovim...${NC}"
-NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz"
+NVIM_VERSION="$(get_version nvim "latest")"
+if [ "$NVIM_VERSION" = "latest" ]; then
+    echo -e "${YELLOW}Installing latest Neovim...${NC}"
+    NVIM_URL="https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz"
+else
+    echo -e "${YELLOW}Installing Neovim version ${NVIM_VERSION}...${NC}"
+    NVIM_URL="https://github.com/neovim/neovim/releases/download/${NVIM_VERSION}/nvim-linux64.tar.gz"
+fi
 TMP_DIR="$(mktemp -d)"
 if command -v curl &> /dev/null; then
     DOWNLOADER="curl -L"

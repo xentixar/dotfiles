@@ -1,9 +1,24 @@
 #!/bin/bash
 
 # PHP Installation Script
-# Installs PHP and common extensions
+# Installs PHP and common extensions (version from versions.json; supports specific versions or 'latest')
 
-PHP_VERSION="8.4"
+# Load version helpers
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/version_utils.sh" ]; then
+    # shellcheck disable=SC1090
+    . "$SCRIPT_DIR/version_utils.sh"
+fi
+
+# Fallback get_version if version_utils.sh is unavailable
+if ! declare -f get_version >/dev/null 2>&1; then
+    get_version() {
+        # $1 = tool, $2 = default
+        echo "$2"
+    }
+fi
+
+PHP_TARGET_VERSION="$(get_version php "8.4")"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -13,7 +28,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   PHP $PHP_VERSION Installation                 ║${NC}"
+echo -e "${BLUE}║   PHP $PHP_TARGET_VERSION Installation                 ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -40,13 +55,18 @@ echo ""
 
 # Check if PHP is already installed
 if command -v php &> /dev/null; then
-    PHP_VERSION=$(php -v | head -n 1 | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
-    if [ "$PHP_VERSION" = "$PHP_VERSION" ]; then
-        echo -e "${GREEN}✓${NC} PHP $PHP_VERSION is already installed"
+    INSTALLED_PHP_VERSION="$(php -v | head -n 1 | cut -d ' ' -f 2 | cut -d '.' -f 1,2)"
+
+    if [ "$PHP_TARGET_VERSION" = "latest" ]; then
+        echo -e "${GREEN}✓${NC} PHP $INSTALLED_PHP_VERSION is already installed (target: latest)"
+        php -v
+        exit 0
+    elif [ "$INSTALLED_PHP_VERSION" = "$PHP_TARGET_VERSION" ]; then
+        echo -e "${GREEN}✓${NC} PHP $INSTALLED_PHP_VERSION is already installed"
         php -v
         exit 0
     else
-        echo -e "${YELLOW}⚠${NC} PHP $PHP_VERSION is installed, but PHP $PHP_VERSION is required"
+        echo -e "${YELLOW}⚠${NC} PHP $INSTALLED_PHP_VERSION is installed, but PHP $PHP_TARGET_VERSION is configured"
         read -p "Continue with installation? [y/N]: " continue_install
         if [[ ! "$continue_install" =~ ^[Yy]$ ]]; then
             exit 0
@@ -56,23 +76,29 @@ fi
 
 # Install PHP based on package manager
 if [ "$PKG_MANAGER" = "apt" ]; then
-    echo -e "${YELLOW}Adding PHP $PHP_VERSION repository for Debian/Ubuntu...${NC}"
-    
-    # Add PHP repository
-    sudo apt-get install -y software-properties-common
-    sudo add-apt-repository -y ppa:ondrej/php
-    $UPDATE_CMD
-    
-    echo -e "${YELLOW}Installing PHP $PHP_VERSION and common extensions...${NC}"
-    $INSTALL_CMD php$PHP_VERSION php$PHP_VERSION-cli php$PHP_VERSION-fpm php$PHP_VERSION-common php$PHP_VERSION-mysql php$PHP_VERSION-zip php$PHP_VERSION-gd php$PHP_VERSION-mbstring php$PHP_VERSION-curl php$PHP_VERSION-xml php$PHP_VERSION-bcmath php$PHP_VERSION-intl php$PHP_VERSION-readline
+    if [ "$PHP_TARGET_VERSION" = "latest" ]; then
+        echo -e "${YELLOW}Installing latest PHP from Debian/Ubuntu repositories...${NC}"
+        $UPDATE_CMD
+        $INSTALL_CMD php php-cli php-fpm php-common php-mysql php-zip php-gd php-mbstring php-curl php-xml php-bcmath php-intl php-readline
+    else
+        echo -e "${YELLOW}Adding PHP $PHP_TARGET_VERSION repository for Debian/Ubuntu...${NC}"
+        
+        # Add PHP repository
+        sudo apt-get install -y software-properties-common
+        sudo add-apt-repository -y ppa:ondrej/php
+        $UPDATE_CMD
+        
+        echo -e "${YELLOW}Installing PHP $PHP_TARGET_VERSION and common extensions...${NC}"
+        $INSTALL_CMD php$PHP_TARGET_VERSION php$PHP_TARGET_VERSION-cli php$PHP_TARGET_VERSION-fpm php$PHP_TARGET_VERSION-common php$PHP_TARGET_VERSION-mysql php$PHP_TARGET_VERSION-zip php$PHP_TARGET_VERSION-gd php$PHP_TARGET_VERSION-mbstring php$PHP_TARGET_VERSION-curl php$PHP_TARGET_VERSION-xml php$PHP_TARGET_VERSION-bcmath php$PHP_TARGET_VERSION-intl php$PHP_TARGET_VERSION-readline
+    fi
     
 elif [ "$PKG_MANAGER" = "pacman" ]; then
-    echo -e "${YELLOW}Installing PHP $PHP_VERSION and common extensions...${NC}"
+    echo -e "${YELLOW}Installing PHP (latest in Arch repos) and common extensions...${NC}"
     # Arch Linux typically has latest PHP in repos
     $INSTALL_CMD php php-fpm php-gd php-intl php-sqlite php-pgsql
     
 elif [ "$PKG_MANAGER" = "dnf" ]; then
-    echo -e "${YELLOW}Installing PHP $PHP_VERSION and common extensions...${NC}"
+    echo -e "${YELLOW}Installing PHP (latest in Fedora/RHEL repos) and common extensions...${NC}"
     # Fedora/RHEL
     $INSTALL_CMD php php-cli php-fpm php-common php-mysqlnd php-zip php-gd php-mbstring php-curl php-xml php-bcmath php-intl php-readline
 fi
@@ -94,7 +120,7 @@ fi
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   PHP $PHP_VERSION Installation Complete!       ║${NC}"
+echo -e "${GREEN}║   PHP $PHP_TARGET_VERSION Installation Complete!     ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 
 # Install Composer after PHP

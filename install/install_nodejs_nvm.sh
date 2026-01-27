@@ -1,7 +1,24 @@
 #!/bin/bash
 
 # Node.js Installation via NVM Script
-# Installs NVM and latest LTS Node.js
+# Installs NVM and Node.js version from versions.json (supports: specific versions, 'lts', 'latest')
+
+# Load version helpers
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -f "$SCRIPT_DIR/version_utils.sh" ]; then
+    # shellcheck disable=SC1090
+    . "$SCRIPT_DIR/version_utils.sh"
+fi
+
+# Fallback get_version if version_utils.sh is unavailable
+if ! declare -f get_version >/dev/null 2>&1; then
+    get_version() {
+        # $1 = tool, $2 = default
+        echo "$2"
+    }
+fi
+
+NODE_VERSION="$(get_version nodejs "lts")"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -25,10 +42,20 @@ if [ -s "$HOME/.nvm/nvm.sh" ]; then
         read -p "Reinstall NVM? [y/N]: " reinstall
         if [[ ! "$reinstall" =~ ^[Yy]$ ]]; then
             # Just install/update Node.js
-            echo -e "${YELLOW}Installing latest LTS Node.js...${NC}"
-            nvm install --lts
-            nvm use --lts
-            nvm alias default lts/*
+            echo -e "${YELLOW}Installing Node.js ($NODE_VERSION)...${NC}"
+            if [ "$NODE_VERSION" = "latest" ]; then
+                nvm install node
+                nvm use node
+                nvm alias default node
+            elif [ "$NODE_VERSION" = "lts" ]; then
+                nvm install --lts
+                nvm use --lts
+                nvm alias default lts/*
+            else
+                nvm install "$NODE_VERSION"
+                nvm use "$NODE_VERSION"
+                nvm alias default "$NODE_VERSION"
+            fi
             echo ""
             echo -e "${GREEN}✓${NC} Node.js installation completed!"
             node --version
@@ -60,12 +87,22 @@ fi
 echo -e "${GREEN}✓${NC} NVM installed successfully"
 nvm --version
 
-# Install latest LTS Node.js
+# Install configured Node.js version
 echo ""
-echo -e "${YELLOW}Installing latest LTS Node.js...${NC}"
-nvm install --lts
-nvm use --lts
-nvm alias default lts/*
+echo -e "${YELLOW}Installing Node.js ($NODE_VERSION)...${NC}"
+if [ "$NODE_VERSION" = "latest" ]; then
+    nvm install node
+    nvm use node
+    nvm alias default node
+elif [ "$NODE_VERSION" = "lts" ]; then
+    nvm install --lts
+    nvm use --lts
+    nvm alias default lts/*
+else
+    nvm install "$NODE_VERSION"
+    nvm use "$NODE_VERSION"
+    nvm alias default "$NODE_VERSION"
+fi
 
 # Verify installation
 if command -v node &> /dev/null; then
