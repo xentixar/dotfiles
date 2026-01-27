@@ -104,8 +104,7 @@ show_menu() {
     fi
     
     echo ""
-    local max_option=$SPECIAL_OPTION_INDEX
-    echo -e "${CYAN}Press Enter to start installation, or type a number (1-$max_option) to toggle${NC}"
+    echo -e "${CYAN}Press Enter to start installation, or type numbers (1-$SPECIAL_OPTION_INDEX) to toggle (e.g., 1 or 1,2,3)${NC}"
 }
 
 # Initial menu display
@@ -120,10 +119,37 @@ while true; do
         break
     fi
     
-    # Validate input is a number
-    if [[ "$input" =~ ^[0-9]+$ ]]; then
-        local max_option=$SPECIAL_OPTION_INDEX
-        if [ "$input" -ge 1 ] && [ "$input" -le "$max_option" ]; then
+    # Check if input contains comma (multiple selections)
+    if [[ "$input" == *","* ]]; then
+        # Handle comma-separated input
+        IFS=',' read -ra NUMBERS <<< "$input"
+        INVALID=false
+        for num in "${NUMBERS[@]}"; do
+            # Trim whitespace
+            num=$(echo "$num" | xargs)
+            if [[ "$num" =~ ^[0-9]+$ ]]; then
+                if [ "$num" -ge 1 ] && [ "$num" -le "$SPECIAL_OPTION_INDEX" ]; then
+                    # Toggle selection
+                    if [ "${SELECTIONS[$num]}" -eq 1 ]; then
+                        SELECTIONS[$num]=0
+                    else
+                        SELECTIONS[$num]=1
+                    fi
+                else
+                    INVALID=true
+                fi
+            else
+                INVALID=true
+            fi
+        done
+        if [ "$INVALID" = true ]; then
+            echo -e "${RED}Invalid input. Please enter numbers between 1-$SPECIAL_OPTION_INDEX (e.g., 1 or 1,2,3) or press Enter to proceed.${NC}"
+            sleep 1
+        fi
+        show_menu
+    elif [[ "$input" =~ ^[0-9]+$ ]]; then
+        # Single number input
+        if [ "$input" -ge 1 ] && [ "$input" -le "$SPECIAL_OPTION_INDEX" ]; then
             # Toggle selection
             if [ "${SELECTIONS[$input]}" -eq 1 ]; then
                 SELECTIONS[$input]=0
@@ -132,13 +158,12 @@ while true; do
             fi
             show_menu
         else
-            echo -e "${RED}Invalid input. Please enter a number between 1-$max_option or press Enter to proceed.${NC}"
+            echo -e "${RED}Invalid input. Please enter a number between 1-$SPECIAL_OPTION_INDEX or press Enter to proceed.${NC}"
             sleep 1
             show_menu
         fi
     else
-        local max_option=$SPECIAL_OPTION_INDEX
-        echo -e "${RED}Invalid input. Please enter a number between 1-$max_option or press Enter to proceed.${NC}"
+        echo -e "${RED}Invalid input. Please enter numbers between 1-$SPECIAL_OPTION_INDEX (e.g., 1 or 1,2,3) or press Enter to proceed.${NC}"
         sleep 1
         show_menu
     fi
@@ -146,8 +171,7 @@ done
 
 # Check if anything is selected
 TOTAL_SELECTED=0
-local max_option=$SPECIAL_OPTION_INDEX
-for i in $(seq 1 $max_option); do
+for i in $(seq 1 $SPECIAL_OPTION_INDEX); do
     if [ "${SELECTIONS[$i]}" -eq 1 ]; then
         TOTAL_SELECTED=$((TOTAL_SELECTED + 1))
     fi
@@ -164,7 +188,7 @@ echo ""
 
 # Install selected items
 for i in "${!SCRIPT_FILES[@]}"; do
-    local index=$((i + 1))
+    index=$((i + 1))
     if [ "${SELECTIONS[$index]}" -eq 1 ]; then
         echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
         bash "${SCRIPT_FILES[$i]}"
