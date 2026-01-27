@@ -53,32 +53,37 @@ if [ "$PKG_MANAGER" = "apt" ]; then
     # Install prerequisites
     $INSTALL_CMD wget gpg 2>/dev/null
     
-    # Check if repository already exists
-    if [ -f /etc/apt/sources.list.d/vscode.list ]; then
-        echo -e "${YELLOW}⚠${NC} VSCode repository already exists, updating..."
-        # Remove old repository entry to avoid conflicts
-        sudo rm -f /etc/apt/sources.list.d/vscode.list
+    # Remove ALL existing VSCode repository entries to avoid conflicts
+    echo -e "${YELLOW}⚠${NC} Cleaning up existing VSCode repository entries..."
+    sudo rm -f /etc/apt/sources.list.d/vscode.list
+    sudo rm -f /etc/apt/sources.list.d/vscode*.list
+    # Also check main sources.list for VSCode entries
+    if grep -q "packages.microsoft.com/repos/code" /etc/apt/sources.list 2>/dev/null; then
+        sudo sed -i '/packages.microsoft.com\/repos\/code/d' /etc/apt/sources.list
     fi
     
-    # Check for existing GPG keys and remove conflicting ones
-    if [ -f /etc/apt/trusted.gpg.d/packages.microsoft.gpg ]; then
-        echo -e "${YELLOW}⚠${NC} Removing old Microsoft GPG key..."
-        sudo rm -f /etc/apt/trusted.gpg.d/packages.microsoft.gpg
-    fi
-    if [ -f /usr/share/keyrings/microsoft.gpg ]; then
-        echo -e "${YELLOW}⚠${NC} Removing conflicting Microsoft GPG key..."
-        sudo rm -f /usr/share/keyrings/microsoft.gpg
-    fi
+    # Remove ALL Microsoft GPG keys from both locations
+    echo -e "${YELLOW}⚠${NC} Removing existing Microsoft GPG keys..."
+    sudo rm -f /etc/apt/trusted.gpg.d/packages.microsoft.gpg
+    sudo rm -f /etc/apt/trusted.gpg.d/microsoft*.gpg
+    sudo rm -f /usr/share/keyrings/microsoft.gpg
+    sudo rm -f /usr/share/keyrings/packages.microsoft.gpg
     
-    # Add Microsoft GPG key
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg
-    sudo install -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+    # Clean apt cache to remove any cached repository info
+    sudo apt-get clean 2>/dev/null || true
     
-    # Add repository
-    sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
-    rm /tmp/packages.microsoft.gpg
+    # Add Microsoft GPG key to /usr/share/keyrings/ (modern approach)
+    echo -e "${YELLOW}Adding Microsoft GPG key...${NC}"
+    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /usr/share/keyrings/microsoft.gpg > /dev/null
     
-    $UPDATE_CMD 2>&1 | grep -v "Conflicting values" || true
+    # Add repository with correct Signed-By path
+    echo -e "${YELLOW}Adding VSCode repository...${NC}"
+    sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
+    
+    # Update package lists
+    echo -e "${YELLOW}Updating package lists...${NC}"
+    $UPDATE_CMD
+    
     echo -e "${YELLOW}Installing VSCode...${NC}"
     $INSTALL_CMD code
     
