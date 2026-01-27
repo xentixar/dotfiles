@@ -26,6 +26,6 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
-feh --bg-fill "$HOME/Pictures/wallpapers" 
+feh --bg-fill "$HOME/Pictures" 
 # picom &
-x11vnc -auth guess -forever -loop -noxdamage -repeat -rfbauth /home/xentixar/.vnc/passwd -rfbport 5999 -shared &
+# x11vnc -auth guess -forever -loop -noxdamage -repeat -rfbauth /home/xentixar/.vnc/passwd -rfbport 5999 -shared &
