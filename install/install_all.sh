@@ -16,7 +16,7 @@ echo -e "${BLUE}╚════════════════════�
 echo ""
 
 INSTALL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TOOLS=("php84" "composer" "nodejs_nvm" "vscode")
+TOOLS=("php" "composer" "nodejs_nvm" "vscode" "chrome")
 
 for tool in "${TOOLS[@]}"; do
     echo ""

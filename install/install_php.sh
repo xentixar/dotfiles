@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# PHP 8.4 Installation Script
-# Installs PHP 8.4 and common extensions
+# PHP Installation Script
+# Installs PHP and common extensions
+
+PHP_VERSION="8.4"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -11,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   PHP 8.4 Installation                 ║${NC}"
+echo -e "${BLUE}║   PHP $PHP_VERSION Installation                 ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -36,15 +38,15 @@ fi
 echo -e "${YELLOW}Detected package manager: $PKG_MANAGER${NC}"
 echo ""
 
-# Check if PHP 8.4 is already installed
+# Check if PHP is already installed
 if command -v php &> /dev/null; then
     PHP_VERSION=$(php -v | head -n 1 | cut -d ' ' -f 2 | cut -d '.' -f 1,2)
-    if [ "$PHP_VERSION" = "8.4" ]; then
-        echo -e "${GREEN}✓${NC} PHP 8.4 is already installed"
+    if [ "$PHP_VERSION" = "$PHP_VERSION" ]; then
+        echo -e "${GREEN}✓${NC} PHP $PHP_VERSION is already installed"
         php -v
         exit 0
     else
-        echo -e "${YELLOW}⚠${NC} PHP $PHP_VERSION is installed, but PHP 8.4 is required"
+        echo -e "${YELLOW}⚠${NC} PHP $PHP_VERSION is installed, but PHP $PHP_VERSION is required"
         read -p "Continue with installation? [y/N]: " continue_install
         if [[ ! "$continue_install" =~ ^[Yy]$ ]]; then
             exit 0
@@ -52,25 +54,25 @@ if command -v php &> /dev/null; then
     fi
 fi
 
-# Install PHP 8.4 based on package manager
+# Install PHP based on package manager
 if [ "$PKG_MANAGER" = "apt" ]; then
-    echo -e "${YELLOW}Adding PHP 8.4 repository for Debian/Ubuntu...${NC}"
+    echo -e "${YELLOW}Adding PHP $PHP_VERSION repository for Debian/Ubuntu...${NC}"
     
     # Add PHP repository
     sudo apt-get install -y software-properties-common
     sudo add-apt-repository -y ppa:ondrej/php
     $UPDATE_CMD
     
-    echo -e "${YELLOW}Installing PHP 8.4 and common extensions...${NC}"
-    $INSTALL_CMD php8.4 php8.4-cli php8.4-fpm php8.4-common php8.4-mysql php8.4-zip php8.4-gd php8.4-mbstring php8.4-curl php8.4-xml php8.4-bcmath php8.4-intl php8.4-readline
+    echo -e "${YELLOW}Installing PHP $PHP_VERSION and common extensions...${NC}"
+    $INSTALL_CMD php$PHP_VERSION php$PHP_VERSION-cli php$PHP_VERSION-fpm php$PHP_VERSION-common php$PHP_VERSION-mysql php$PHP_VERSION-zip php$PHP_VERSION-gd php$PHP_VERSION-mbstring php$PHP_VERSION-curl php$PHP_VERSION-xml php$PHP_VERSION-bcmath php$PHP_VERSION-intl php$PHP_VERSION-readline
     
 elif [ "$PKG_MANAGER" = "pacman" ]; then
-    echo -e "${YELLOW}Installing PHP 8.4 and common extensions...${NC}"
+    echo -e "${YELLOW}Installing PHP $PHP_VERSION and common extensions...${NC}"
     # Arch Linux typically has latest PHP in repos
     $INSTALL_CMD php php-fpm php-gd php-intl php-sqlite php-pgsql
     
 elif [ "$PKG_MANAGER" = "dnf" ]; then
-    echo -e "${YELLOW}Installing PHP 8.4 and common extensions...${NC}"
+    echo -e "${YELLOW}Installing PHP $PHP_VERSION and common extensions...${NC}"
     # Fedora/RHEL
     $INSTALL_CMD php php-cli php-fpm php-common php-mysqlnd php-zip php-gd php-mbstring php-curl php-xml php-bcmath php-intl php-readline
 fi
@@ -92,7 +94,7 @@ fi
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   PHP 8.4 Installation Complete!       ║${NC}"
+echo -e "${GREEN}║   PHP $PHP_VERSION Installation Complete!       ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 
 # Install Composer after PHP
