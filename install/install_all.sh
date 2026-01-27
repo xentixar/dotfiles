@@ -37,5 +37,5 @@ done
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   All Installations Complete!         ║${NC}"
+echo -e "${GREEN}║   All Installations Complete!          ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"

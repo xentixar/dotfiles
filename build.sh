@@ -9,6 +9,7 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
+BOLD='\033[1m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
@@ -57,97 +58,117 @@ if [ ${#SCRIPT_FILES[@]} -eq 0 ]; then
     exit 0
 fi
 
+# Current cursor position (1-based)
+CURRENT_POS=1
+TOTAL_OPTIONS=${#SCRIPT_FILES[@]}
+
+# Save terminal settings
+stty_save=$(stty -g)
+
+# Function to restore terminal
+restore_terminal() {
+    stty "$stty_save" 2>/dev/null
+    echo -e "\033[?25h" # Show cursor
+    echo "" # New line
+}
+
+# Function to handle exit
+cleanup_and_exit() {
+    restore_terminal
+    exit 0
+}
+
+# Trap to restore terminal on exit
+trap cleanup_and_exit EXIT INT TERM
+
 # Function to display menu
 show_menu() {
-    echo ""
+    # Clear screen and move cursor to top
+    clear
     echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-    echo -e "${BLUE}║   Build Selection Menu                ║${NC}"
+    echo -e "${BLUE}║   Build Selection Menu                 ║${NC}"
     echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
     echo ""
-    echo -e "${CYAN}Select what to build (toggle with number, press Enter to proceed):${NC}"
+    echo -e "${CYAN}Use ↑↓ to navigate, SPACE to toggle, ENTER to proceed${NC}"
     echo ""
     
     # Display script options
     for i in "${!SCRIPT_FILES[@]}"; do
         index=$((i + 1))
-        if [ "${SELECTIONS[$index]}" -eq 1 ]; then
-            echo -e "  ${GREEN}[✓]${NC} $index. ${SCRIPT_NAMES[$i]}"
+        if [ $index -eq $CURRENT_POS ]; then
+            # Highlighted (current position)
+            if [ "${SELECTIONS[$index]}" -eq 1 ]; then
+                echo -e "  ${BOLD}${GREEN}[✓]${NC} ${BOLD}${CYAN}>${NC} ${SCRIPT_NAMES[$i]}"
+            else
+                echo -e "  ${BOLD}${YELLOW}[ ]${NC} ${BOLD}${CYAN}>${NC} ${SCRIPT_NAMES[$i]}"
+            fi
         else
-            echo -e "  ${YELLOW}[ ]${NC} $index. ${SCRIPT_NAMES[$i]}"
+            # Not highlighted
+            if [ "${SELECTIONS[$index]}" -eq 1 ]; then
+                echo -e "  ${GREEN}[✓]${NC}   ${SCRIPT_NAMES[$i]}"
+            else
+                echo -e "  ${YELLOW}[ ]${NC}   ${SCRIPT_NAMES[$i]}"
+            fi
         fi
     done
     
     echo ""
-    echo -e "${CYAN}Press Enter to start building, or type numbers (1-${#SCRIPT_FILES[@]}) to toggle (e.g., 1 or 1,2,3)${NC}"
 }
+
+# Configure terminal for raw input
+stty -echo
+stty cbreak
+echo -e "\033[?25l" # Hide cursor
 
 # Initial menu display
 show_menu
 
 # Interactive selection loop
-max_option=${#SCRIPT_FILES[@]}
 while true; do
-    read -p "> " input
+    # Read single character
+    char=$(dd bs=1 count=1 2>/dev/null)
     
-    # If Enter is pressed, break the loop
-    if [ -z "$input" ]; then
-        break
-    fi
-    
-    # Check if input contains comma (multiple selections)
-    if [[ "$input" == *","* ]]; then
-        # Handle comma-separated input
-        IFS=',' read -ra NUMBERS <<< "$input"
-        INVALID=false
-        for num in "${NUMBERS[@]}"; do
-            # Trim whitespace
-            num=$(echo "$num" | xargs)
-            if [[ "$num" =~ ^[0-9]+$ ]]; then
-                if [ "$num" -ge 1 ] && [ "$num" -le "$max_option" ]; then
-                    # Toggle selection
-                    if [ "${SELECTIONS[$num]}" -eq 1 ]; then
-                        SELECTIONS[$num]=0
-                    else
-                        SELECTIONS[$num]=1
+    # Check for escape sequence (arrow keys)
+    if [ "$char" = $'\033' ]; then
+        # Read the rest of the escape sequence
+        read -rsn1 -t 0.1 tmp
+        if [ "$tmp" = "[" ]; then
+            read -rsn1 -t 0.1 tmp
+            case "$tmp" in
+                A) # Up arrow
+                    if [ $CURRENT_POS -gt 1 ]; then
+                        CURRENT_POS=$((CURRENT_POS - 1))
+                        show_menu
                     fi
-                else
-                    INVALID=true
-                fi
-            else
-                INVALID=true
-            fi
-        done
-        if [ "$INVALID" = true ]; then
-            echo -e "${RED}Invalid input. Please enter numbers between 1-$max_option (e.g., 1 or 1,2,3) or press Enter to proceed.${NC}"
-            sleep 1
+                    ;;
+                B) # Down arrow
+                    if [ $CURRENT_POS -lt $TOTAL_OPTIONS ]; then
+                        CURRENT_POS=$((CURRENT_POS + 1))
+                        show_menu
+                    fi
+                    ;;
+            esac
         fi
-        show_menu
-    elif [[ "$input" =~ ^[0-9]+$ ]]; then
-        # Single number input
-        if [ "$input" -ge 1 ] && [ "$input" -le "$max_option" ]; then
-            # Toggle selection
-            if [ "${SELECTIONS[$input]}" -eq 1 ]; then
-                SELECTIONS[$input]=0
-            else
-                SELECTIONS[$input]=1
-            fi
-            show_menu
+    elif [ "$char" = " " ]; then
+        # Space to toggle selection
+        if [ "${SELECTIONS[$CURRENT_POS]}" -eq 1 ]; then
+            SELECTIONS[$CURRENT_POS]=0
         else
-            echo -e "${RED}Invalid input. Please enter a number between 1-$max_option or press Enter to proceed.${NC}"
-            sleep 1
-            show_menu
+            SELECTIONS[$CURRENT_POS]=1
         fi
-    else
-        echo -e "${RED}Invalid input. Please enter numbers between 1-$max_option (e.g., 1 or 1,2,3) or press Enter to proceed.${NC}"
-        sleep 1
         show_menu
+    elif [ "$char" = "" ] || [ "$char" = $'\n' ] || [ "$char" = $'\r' ]; then
+        # Enter to proceed
+        break
     fi
 done
 
+# Restore terminal
+restore_terminal
+
 # Check if anything is selected
 TOTAL_SELECTED=0
-max_option=${#SCRIPT_FILES[@]}
-for i in $(seq 1 $max_option); do
+for i in $(seq 1 $TOTAL_OPTIONS); do
     if [ "${SELECTIONS[$i]}" -eq 1 ]; then
         TOTAL_SELECTED=$((TOTAL_SELECTED + 1))
     fi
@@ -174,5 +195,5 @@ done
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   Build Completed!                    ║${NC}"
+echo -e "${GREEN}║   Build Completed!                     ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"

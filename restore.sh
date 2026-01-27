@@ -23,7 +23,7 @@ if [ ! -d "$DOTFILES_DIR" ]; then
 fi
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   Dotfiles Restore Script             ║${NC}"
+echo -e "${BLUE}║   Dotfiles Restore Script              ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -151,7 +151,7 @@ fi
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   Restore Completed Successfully!    ║${NC}"
+echo -e "${GREEN}║   Restore Completed Successfully!      ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 echo ""
 

@@ -11,7 +11,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   VSCode Installation                 ║${NC}"
+echo -e "${BLUE}║   VSCode Installation                  ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -120,5 +120,5 @@ fi
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   VSCode Installation Complete!      ║${NC}"
+echo -e "${GREEN}║   VSCode Installation Complete!        ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"

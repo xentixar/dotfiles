@@ -74,5 +74,5 @@ done
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   Development Packages Installed!    ║${NC}"
+echo -e "${GREEN}║   Development Packages Installed!      ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"

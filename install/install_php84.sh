@@ -11,7 +11,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   PHP 8.4 Installation                ║${NC}"
+echo -e "${BLUE}║   PHP 8.4 Installation                 ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -92,7 +92,7 @@ fi
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   PHP 8.4 Installation Complete!      ║${NC}"
+echo -e "${GREEN}║   PHP 8.4 Installation Complete!       ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
 
 # Install Composer after PHP

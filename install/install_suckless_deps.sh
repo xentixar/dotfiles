@@ -85,5 +85,5 @@ done
 
 echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║   Suckless Dependencies Installed!    ║${NC}"
+echo -e "${GREEN}║   Suckless Dependencies Installed!     ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
