@@ -120,14 +120,22 @@ fi
 # Restore scripts
 echo ""
 echo -e "${YELLOW}Restoring scripts...${NC}"
-if [ -d "$DOTFILES_DIR/Scripts" ]; then
+if [ -d "$DOTFILES_DIR/scripts" ]; then
+    restore_file "$DOTFILES_DIR/scripts" "$HOME_DIR/scripts"
+elif [ -d "$DOTFILES_DIR/Scripts" ]; then
+    # Fallback for capital S (legacy)
     restore_file "$DOTFILES_DIR/Scripts" "$HOME_DIR/Scripts"
 else
     echo -e "  ${YELLOW}⚠${NC} Scripts directory not found (optional)"
 fi
 
 # Make scripts executable
-if [ -d "$HOME_DIR/Scripts" ]; then
+if [ -d "$HOME_DIR/scripts" ]; then
+    echo -e "${YELLOW}Making scripts executable...${NC}"
+    find "$HOME_DIR/scripts" -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null
+    echo -e "  ${GREEN}✓${NC} Scripts are now executable"
+elif [ -d "$HOME_DIR/Scripts" ]; then
+    # Fallback for capital S (legacy)
     echo -e "${YELLOW}Making scripts executable...${NC}"
     find "$HOME_DIR/Scripts" -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null
     echo -e "  ${GREEN}✓${NC} Scripts are now executable"

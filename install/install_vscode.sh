@@ -48,18 +48,37 @@ echo ""
 
 # Install VSCode based on package manager
 if [ "$PKG_MANAGER" = "apt" ]; then
-    echo -e "${YELLOW}Adding VSCode repository for Debian/Ubuntu...${NC}"
+    echo -e "${YELLOW}Setting up VSCode repository for Debian/Ubuntu...${NC}"
     
     # Install prerequisites
-    $INSTALL_CMD wget gpg
+    $INSTALL_CMD wget gpg 2>/dev/null
+    
+    # Check if repository already exists
+    if [ -f /etc/apt/sources.list.d/vscode.list ]; then
+        echo -e "${YELLOW}⚠${NC} VSCode repository already exists, updating..."
+        # Remove old repository entry to avoid conflicts
+        sudo rm -f /etc/apt/sources.list.d/vscode.list
+    fi
+    
+    # Check for existing GPG keys and remove conflicting ones
+    if [ -f /etc/apt/trusted.gpg.d/packages.microsoft.gpg ]; then
+        echo -e "${YELLOW}⚠${NC} Removing old Microsoft GPG key..."
+        sudo rm -f /etc/apt/trusted.gpg.d/packages.microsoft.gpg
+    fi
+    if [ -f /usr/share/keyrings/microsoft.gpg ]; then
+        echo -e "${YELLOW}⚠${NC} Removing conflicting Microsoft GPG key..."
+        sudo rm -f /usr/share/keyrings/microsoft.gpg
+    fi
     
     # Add Microsoft GPG key
     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /tmp/packages.microsoft.gpg
     sudo install -o root -g root -m 644 /tmp/packages.microsoft.gpg /etc/apt/trusted.gpg.d/
+    
+    # Add repository
     sudo sh -c 'echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/trusted.gpg.d/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list'
     rm /tmp/packages.microsoft.gpg
     
-    $UPDATE_CMD
+    $UPDATE_CMD 2>&1 | grep -v "Conflicting values" || true
     echo -e "${YELLOW}Installing VSCode...${NC}"
     $INSTALL_CMD code
     
