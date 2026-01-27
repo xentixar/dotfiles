@@ -1,0 +1,61 @@
+# Emacs auto-generated files
+*~
+\#*\#
+.\#*
+
+# Auto-save files
+auto-save-list/
+
+# Native compilation cache
+eln-cache/
+
+# Emacs package directory
+elpa/
+
+# Projectile bookmarks
+projectile-bookmarks.eld
+projectile.cache
+
+# Transient history
+transient/
+
+# Recentf
+recentf
+
+# Network security data
+network-security.data
+
+# Smex history
+smex-items
+
+# Ido history
+ido.last
+
+# Bookmarks
+bookmarks
+
+# Session files
+session.*
+
+# TRAMP
+tramp
+
+# Custom file (if using separate custom file)
+custom.el
+
+# Backup files
+*.elc
+*.eln
+
+# LSP
+.lsp-session-*
+.cache/
+
+# Tree-sitter
+tree-sitter/
+
+# Other
+url/
+var/
+games/
+.DS_Store

@@ -1,0 +1,12 @@
+-- Set leader keys before loading lazy
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- Bootstrap LazyVim
+require("config.lazy")
+
+-- Load core configuration files
+require("config.options")
+require("config.keymaps")
+require("config.autocmds")
+require("config.reload")

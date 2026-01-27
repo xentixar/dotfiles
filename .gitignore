@@ -77,6 +77,8 @@ config/dwm/*.o
 config/dwm/*.rej
 config/dwm/*.orig
 config/dwm/.cache/
+config/dwm/build/
+config/dwm/*.png
 config/st/st
 config/st/*.o
 config/st/*.rej
@@ -91,6 +93,7 @@ config/slstatus/slstatus
 config/slstatus/*.o
 config/slstatus/*.rej
 config/slstatus/*.orig
+config/slstatus/.gitignore
 
 # Neovim
 config/nvim/plugin/
@@ -106,6 +109,7 @@ config/nvim/.local/
 config/nvim/spell/*.add
 config/nvim/undo/
 config/nvim/view/
+# Note: lazy-lock.json and lazyvim.json are tracked for reproducibility
 
 # Vim
 config/vim/*.swp
@@ -129,6 +133,10 @@ config/emacs/.cache/
 config/emacs/*.elc
 config/emacs/*~
 config/emacs/gnupg/
+config/emacs/.extension/
+config/emacs/eln-cache/
+config/emacs/projectile-bookmarks.eld
+config/emacs/transient/
 
 # Git repositories (should be removed, but ignore just in case)
 **/.git/

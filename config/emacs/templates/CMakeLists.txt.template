@@ -1,0 +1,70 @@
+# Sample CMakeLists.txt Template for C++ Projects
+# Copy and customize for your project
+
+cmake_minimum_required(VERSION 3.10)
+
+# Project name and version
+project(MyProject VERSION 1.0.0 LANGUAGES CXX)
+
+# C++ Standard
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+# Export compile commands for clangd
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# Compiler warnings
+if(MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
+
+# Debug/Release configurations
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+
+# Source files
+set(SOURCES
+    src/main.cpp
+    # Add more source files here
+)
+
+# Header files
+set(HEADERS
+    include/myproject.h
+    # Add more header files here
+)
+
+# Include directories
+include_directories(
+    ${PROJECT_SOURCE_DIR}/include
+)
+
+# Executable
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+
+# Libraries (example)
+# find_package(Boost REQUIRED)
+# target_link_libraries(${PROJECT_NAME} Boost::boost)
+
+# Install rules
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+
+# Testing (optional)
+enable_testing()
+# add_subdirectory(tests)
+
+# Print configuration summary
+message(STATUS "")
+message(STATUS "Configuration Summary:")
+message(STATUS "  Project: ${PROJECT_NAME} ${PROJECT_VERSION}")
+message(STATUS "  Build Type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "  C++ Standard: ${CMAKE_CXX_STANDARD}")
+message(STATUS "  Compiler: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "")
