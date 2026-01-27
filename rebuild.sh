@@ -44,68 +44,21 @@ if [[ "$run_restore" =~ ^[Yy]$ ]]; then
     echo ""
 fi
 
-# Step 3: Rebuild suckless tools
-echo -e "${YELLOW}Step 3: Rebuilding suckless tools...${NC}"
-read -p "Rebuild suckless tools (dwm, st, dmenu, slstatus)? [y/N]: " rebuild_suckless
+# Step 3: Rebuild tools
+echo -e "${YELLOW}Step 3: Rebuilding tools...${NC}"
+read -p "Rebuild tools? [y/N]: " rebuild_tools
 
-if [[ "$rebuild_suckless" =~ ^[Yy]$ ]]; then
-    BUILD_DIR="$DOTFILES_DIR/build"
-    if [ -d "$BUILD_DIR" ] && [ -f "$BUILD_DIR/build_all.sh" ]; then
-        echo ""
-        echo -e "${YELLOW}Choose build method:${NC}"
-        echo "  1) Build all tools"
-        echo "  2) Choose individual tools"
-        read -p "Enter choice [1-2] (default: 1): " build_choice
-        build_choice=${build_choice:-1}
-        
-        if [ "$build_choice" = "1" ]; then
+if [[ "$rebuild_tools" =~ ^[Yy]$ ]]; then
+    if [ -f "$DOTFILES_DIR/build.sh" ]; then
+        bash "$DOTFILES_DIR/build.sh"
+    else
+        echo -e "${YELLOW}⚠${NC} build.sh not found, using fallback method"
+        BUILD_DIR="$DOTFILES_DIR/build"
+        if [ -f "$BUILD_DIR/build_all.sh" ]; then
             bash "$BUILD_DIR/build_all.sh"
         else
-            echo ""
-            echo -e "${YELLOW}Available tools:${NC}"
-            echo "  1) DWM"
-            echo "  2) ST"
-            echo "  3) DMenu"
-            echo "  4) SLStatus"
-            read -p "Enter tool numbers (comma-separated, e.g., 1,2,3): " tool_numbers
-            
-            IFS=',' read -ra TOOLS <<< "$tool_numbers"
-            for tool_num in "${TOOLS[@]}"; do
-                case $tool_num in
-                    1)
-                        [ -f "$BUILD_DIR/build_dwm.sh" ] && bash "$BUILD_DIR/build_dwm.sh"
-                        ;;
-                    2)
-                        [ -f "$BUILD_DIR/build_st.sh" ] && bash "$BUILD_DIR/build_st.sh"
-                        ;;
-                    3)
-                        [ -f "$BUILD_DIR/build_dmenu.sh" ] && bash "$BUILD_DIR/build_dmenu.sh"
-                        ;;
-                    4)
-                        [ -f "$BUILD_DIR/build_slstatus.sh" ] && bash "$BUILD_DIR/build_slstatus.sh"
-                        ;;
-                esac
-            done
+            echo -e "${RED}✗${NC} build_all.sh not found"
         fi
-    else
-        # Fallback to old method if build/ directory doesn't exist
-        SUCKLESS_DIRS=("dwm" "st" "dmenu" "slstatus")
-        
-        for tool in "${SUCKLESS_DIRS[@]}"; do
-            tool_dir="$HOME/.config/$tool"
-            if [ -d "$tool_dir" ]; then
-                echo -e "${YELLOW}Rebuilding $tool...${NC}"
-                cd "$tool_dir"
-                if [ -f "config.h" ] || [ -f "config.def.h" ]; then
-                    sudo make clean install 2>&1 | grep -E "(error|Error|✓|installed)" || echo -e "  ${GREEN}✓${NC} $tool rebuilt"
-                else
-                    echo -e "  ${YELLOW}⚠${NC} $tool: config files not found, skipping"
-                fi
-                cd - > /dev/null
-            else
-                echo -e "  ${YELLOW}⚠${NC} $tool directory not found at $tool_dir"
-            fi
-        done
     fi
 fi
 

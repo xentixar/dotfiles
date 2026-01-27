@@ -87,19 +87,23 @@ Install development tools individually or all at once:
 ./install/install_vscode.sh    # Visual Studio Code
 ```
 
-#### 5. Rebuild suckless tools (optional)
+#### 5. Rebuild tools (optional)
 
-After restoring, rebuild your window manager and tools:
+After restoring, rebuild your tools:
 
 ```bash
-# Rebuild all tools at once
-./build/build_all.sh
+./build.sh
+```
 
-# Or rebuild individually:
+This will show an interactive checkbox menu where you can select what to build. The menu automatically detects all build scripts in the `build/` folder and displays them with their titles (from the first comment line in each script).
+
+You can also rebuild tools individually:
+```bash
 ./build/build_dwm.sh      # DWM window manager
 ./build/build_st.sh       # ST terminal
 ./build/build_dmenu.sh    # DMenu
 ./build/build_slstatus.sh # SLStatus bar
+./build/build_all.sh      # Build all tools at once
 ```
 
 Or use the rebuild script which handles this automatically.
@@ -143,13 +147,28 @@ Each script:
 
 ## Build Scripts
 
-The `build/` folder contains modular build scripts for suckless tools:
+The `build/` folder contains modular build scripts that are automatically detected by `build.sh`:
 
 - **`build_dwm.sh`**: Rebuilds DWM window manager
 - **`build_st.sh`**: Rebuilds ST terminal
 - **`build_dmenu.sh`**: Rebuilds DMenu
 - **`build_slstatus.sh`**: Rebuilds SLStatus status bar
-- **`build_all.sh`**: Rebuilds all suckless tools at once
+- **`build_all.sh`**: Rebuilds all tools at once
+
+### How It Works
+
+The `build.sh` script:
+- **Automatically detects** all `build_*.sh` scripts in the `build/` folder
+- **Extracts the title** from the first comment line in each script (e.g., `# DWM Build Script`)
+- **Displays an interactive menu** with checkboxes where you can select what to build
+- **Executes selected scripts** in order
+
+### Adding New Build Scripts
+
+To add a new build script:
+1. Create a new file `build/build_<name>.sh`
+2. Add a comment on the first line after the shebang: `# Your Build Script Title Here`
+3. The script will automatically appear in the `build.sh` menu
 
 Each script:
 - Cleans previous builds
@@ -193,6 +212,7 @@ dotfiles/
 ├── backup.sh         # Backup current dotfiles to repo
 ├── restore.sh        # Restore dotfiles from repo to system
 ├── install.sh        # Interactive installation menu (auto-detects scripts)
+├── build.sh          # Interactive build menu (auto-detects scripts)
 ├── rebuild.sh        # Complete system rebuild (install + restore)
 ├── .gitignore        # Files to exclude from git
 └── README.md         # This file
