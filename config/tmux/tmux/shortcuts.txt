@@ -1,0 +1,151 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                       TMUX KEYBOARD SHORTCUTS GUIDE                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PREFIX KEY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a               Prefix key (press before most commands)
+  Ctrl-a Ctrl-a        Send Ctrl-a to the application
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SESSION MANAGEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a Ctrl-c        Create new session
+  Ctrl-a Ctrl-j        Choose session from tree
+  Ctrl-a $             Rename current session
+  Ctrl-a d             Detach from session
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WINDOW MANAGEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a c             Create new window (in current path)
+  Ctrl-a ,             Rename current window
+  Ctrl-a X             Kill current window (with confirmation)
+  Ctrl-a &             Kill current window (default binding)
+  Shift-Left           Previous window (no prefix needed)
+  Shift-Right          Next window (no prefix needed)
+  Ctrl-a 1-9           Switch to window 1-9
+  Ctrl-a <             Move current window left
+  Ctrl-a >             Move current window right
+  Ctrl-a w             List all windows
+  Ctrl-a f             Find window by name
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PANE MANAGEMENT - Creating Panes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a |             Split pane horizontally (side-by-side)
+  Ctrl-a -             Split pane vertically (top-bottom)
+  Ctrl-a v             Split pane horizontally (vim-style)
+  Ctrl-a s             Split pane vertically (vim-style)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PANE MANAGEMENT - Navigating Panes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Alt-Left/Right/Up/Down   Navigate panes (no prefix needed)
+  Ctrl-a h/j/k/l       Navigate panes (vim-style)
+  Ctrl-a ;             Toggle to last active pane
+  Ctrl-a o             Go to next pane
+  Ctrl-a q             Show pane numbers (type number to jump)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PANE MANAGEMENT - Resizing Panes
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a Ctrl-h        Resize pane left
+  Ctrl-a Ctrl-j        Resize pane down
+  Ctrl-a Ctrl-k        Resize pane up
+  Ctrl-a Ctrl-l        Resize pane right
+  Ctrl-a Left/Right/Up/Down   Resize with arrow keys
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PANE MANAGEMENT - Pane Actions
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a z             Toggle pane zoom (fullscreen)
+  Ctrl-a x             Kill current pane (no confirmation)
+  Ctrl-a !             Break pane to new window
+  Ctrl-a b             Break pane to new window (stay in current)
+  Ctrl-a S             Toggle synchronize panes (type in all at once)
+  Ctrl-a {             Swap with previous pane
+  Ctrl-a }             Swap with next pane
+  Ctrl-a Space         Cycle through pane layouts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COPY MODE (Vim-style)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a Enter         Enter copy mode
+  Ctrl-a Escape        Enter copy mode
+  Ctrl-a [             Enter copy mode (default)
+  q                    Exit copy mode
+
+  In Copy Mode:
+  h/j/k/l              Move cursor (vim-style)
+  H                    Jump to start of line
+  L                    Jump to end of line
+  v                    Begin selection
+  Ctrl-v               Rectangle selection toggle
+  y                    Copy selection and exit
+  Escape               Cancel selection
+  /                    Search forward
+  ?                    Search backward
+  n                    Next search result
+  N                    Previous search result
+  Ctrl-u               Scroll up half page
+  Ctrl-d               Scroll down half page
+  g                    Go to top
+  G                    Go to bottom
+
+  After Copy Mode:
+  Ctrl-a p             Paste buffer
+  Ctrl-a P             Choose which buffer to paste
+  Ctrl-a Ctrl-p        Paste from system clipboard
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+UTILITY COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Ctrl-a r             Reload configuration
+  Ctrl-a e             Edit configuration in editor
+  Ctrl-a ?             List all key bindings (default list)
+  Ctrl-a /             Show this shortcuts guide
+  Ctrl-a m             Show message log
+  Ctrl-a t             Show clock
+  Ctrl-a Ctrl-l        Clear screen and scrollback
+  Ctrl-a :             Enter command mode
+  Ctrl-a i             Display pane info
+  Ctrl-a M             Monitor pane for silence (30s)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+NESTED TMUX SUPPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  F12                  Switch to inner tmux (status bar dims)
+  Shift-F12            Switch back to outer tmux
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TERMINAL COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  tmux                     Start new tmux session
+  tmux ls                  List all sessions
+  tmux attach -t [name]    Attach to session
+  tmux kill-session -t [name]   Kill session
+  tmux new -s [name]       Create named session
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MOUSE SUPPORT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  • Click to select pane
+  • Drag pane borders to resize
+  • Click window name to switch
+  • Scroll to scroll through history
+  • Double-click to select word
+  • Triple-click to select line
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATUS BAR FLAGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  *  Current window          -  Last window
+  #  Activity detected        !  Bell in window
+  ~  Monitored for silence    Z  Zoomed pane
+  🔴 PREFIX indicator         🔄 SYNC indicator
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║  Press 'q' to exit  |  Use arrow keys or j/k to scroll  |  Ctrl-a / to show ║
+╚══════════════════════════════════════════════════════════════════════════════╝
