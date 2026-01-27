@@ -57,6 +57,8 @@ if [ "$PKG_MANAGER" = "apt" ]; then
     echo -e "${YELLOW}⚠${NC} Cleaning up existing VSCode repository entries..."
     sudo rm -f /etc/apt/sources.list.d/vscode.list
     sudo rm -f /etc/apt/sources.list.d/vscode*.list
+    sudo rm -f /etc/apt/sources.list.d/vscode.sources
+    sudo rm -f /etc/apt/sources.list.d/vscode*.sources
     # Also check main sources.list for VSCode entries
     if grep -q "packages.microsoft.com/repos/code" /etc/apt/sources.list 2>/dev/null; then
         sudo sed -i '/packages.microsoft.com\/repos\/code/d' /etc/apt/sources.list
