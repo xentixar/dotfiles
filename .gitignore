@@ -1,0 +1,175 @@
+# Sensitive files - DO NOT COMMIT
+.ssh/
+.gnupg/
+.aws/
+*.pem
+*.key
+*_rsa
+*_dsa
+*_ecdsa
+*_ed25519
+id_rsa*
+*.env
+.env*
+
+# Credentials and tokens
+credentials
+**/credentials
+**/config
+!config/
+*.token
+*.secret
+passwd
+
+# History files
+*_history
+.bash_history
+.zsh_history
+.mysql_history
+.rediscli_history
+.python_history
+.lesshst
+
+# Cache and temporary files
+.cache/
+*.cache
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.old
+
+# Application specific
+.claude/
+.cursor/
+.vscode/
+.local/
+.pub-cache/
+.nvm/
+.phpls/
+.postman/
+.gemini/
+.flutter
+
+# System files
+.sudo_as_admin_successful
+.wget-hsts
+.emulator_console_auth_token
+.zcompdump
+
+# Large directories
+.vnc/
+.var/
+
+# ============================================
+# Config-specific ignores
+# ============================================
+
+# Suckless tools (dwm, st, dmenu, slstatus)
+config/dwm/dwm
+config/dwm/*.o
+config/dwm/*.rej
+config/dwm/*.orig
+config/dwm/.cache/
+config/st/st
+config/st/*.o
+config/st/*.rej
+config/st/*.orig
+config/dmenu/dmenu
+config/dmenu/dmenu_path
+config/dmenu/dmenu_run
+config/dmenu/*.o
+config/dmenu/*.rej
+config/dmenu/*.orig
+config/slstatus/slstatus
+config/slstatus/*.o
+config/slstatus/*.rej
+config/slstatus/*.orig
+
+# Neovim
+config/nvim/plugin/
+config/nvim/packer_compiled.lua
+config/nvim/lazy-lock.json
+config/nvim/.luarc.json
+config/nvim/*.swp
+config/nvim/*.swo
+config/nvim/*.tmp
+config/nvim/session.vim
+config/nvim/.cache/
+config/nvim/.local/
+config/nvim/spell/*.add
+config/nvim/undo/
+config/nvim/view/
+
+# Vim
+config/vim/*.swp
+config/vim/*.swo
+config/vim/*.tmp
+config/vim/.netrwhist
+config/vim/session.vim
+config/vim/.viminfo
+
+# Tmux
+config/tmux/*.log
+config/tmux/resurrect/
+config/tmux/.tmux.conf.local
+
+# Emacs
+config/emacs/.emacs.desktop
+config/emacs/.emacs.desktop.lock
+config/emacs/elpa/
+config/emacs/auto-save-list/
+config/emacs/.cache/
+config/emacs/*.elc
+config/emacs/*~
+config/emacs/gnupg/
+
+# Git repositories (should be removed, but ignore just in case)
+**/.git/
+**/.gitignore.local
+
+# Compiled binaries and object files
+**/*.o
+**/*.so
+**/*.a
+**/*.dylib
+**/*.dll
+**/*.exe
+**/*.bin
+
+# Build artifacts
+**/Makefile.bak
+**/*.rej
+**/*.orig
+**/*.patch
+
+# Lock files
+**/*.lock
+**/.lock
+
+# Log files
+**/*.log
+**/logs/
+
+# Cache directories
+**/.cache/
+**/cache/
+**/tmp/
+**/temp/
+
+# OS specific
+**/.DS_Store
+**/._*
+**/.Trash-*
+**/desktop.ini
+
+# Editor backups
+**/*~
+**/#*#
+**/.#*
