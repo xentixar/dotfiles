@@ -48,6 +48,30 @@ else
     exit 1
 fi
 
+# Copy scripts to /usr/local/bin
+echo ""
+echo -e "${YELLOW}Installing SLStatus scripts...${NC}"
+SCRIPT_DIR="$SLSTATUS_DIR/scripts"
+if [ -d "$SCRIPT_DIR" ]; then
+    for script in "$SCRIPT_DIR"/*.sh; do
+        if [ -f "$script" ]; then
+            script_name=$(basename "$script")
+            echo -n "  Installing $script_name... "
+            sudo cp -f "$script" "/usr/local/bin/$script_name"
+            sudo chmod +x "/usr/local/bin/$script_name"
+            echo -e "${GREEN}✓${NC}"
+        fi
+    done
+fi
+
+# Copy get_apps.sh if it exists
+if [ -f "$SLSTATUS_DIR/get_apps.sh" ]; then
+    echo -n "  Installing get_apps.sh... "
+    sudo cp -f "$SLSTATUS_DIR/get_apps.sh" "/usr/local/bin/get_apps.sh"
+    sudo chmod +x "/usr/local/bin/get_apps.sh"
+    echo -e "${GREEN}✓${NC}"
+fi
+
 cd - > /dev/null
 
 echo ""
