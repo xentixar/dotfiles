@@ -94,3 +94,46 @@ echo ""
 echo -e "${GREEN}╔════════════════════════════════════════╗${NC}"
 echo -e "${GREEN}║   PHP 8.4 Installation Complete!      ║${NC}"
 echo -e "${GREEN}╚════════════════════════════════════════╝${NC}"
+
+# Install Composer after PHP
+echo ""
+echo -e "${YELLOW}Installing Composer...${NC}"
+
+# Check if Composer is already installed
+if command -v composer &> /dev/null; then
+    echo -e "${YELLOW}⚠${NC} Composer is already installed"
+    composer --version
+else
+    # Download and install Composer
+    echo -e "${YELLOW}Downloading Composer installer...${NC}"
+    EXPECTED_CHECKSUM="$(php -r 'copy("https://composer.github.io/installer.sig", "php://stdout");')"
+    php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    ACTUAL_CHECKSUM="$(php -r "echo hash_file('sha384', 'composer-setup.php');")"
+    
+    if [ "$EXPECTED_CHECKSUM" != "$ACTUAL_CHECKSUM" ]; then
+        echo -e "${RED}✗${NC} Composer installer checksum verification failed!"
+        rm -f composer-setup.php
+    else
+        echo -e "${GREEN}✓${NC} Checksum verified"
+        
+        echo -e "${YELLOW}Installing Composer...${NC}"
+        php composer-setup.php --install-dir=/tmp --filename=composer
+        rm composer-setup.php
+        
+        # Move to global location
+        echo -e "${YELLOW}Moving Composer to /usr/local/bin...${NC}"
+        sudo mv /tmp/composer /usr/local/bin/composer
+        sudo chmod +x /usr/local/bin/composer
+        
+        # Verify installation
+        if command -v composer &> /dev/null; then
+            echo ""
+            echo -e "${GREEN}✓${NC} Composer installation completed successfully!"
+            echo ""
+            echo -e "${BLUE}Composer Version:${NC}"
+            composer --version
+        else
+            echo -e "${YELLOW}⚠${NC} Composer installation completed but may not be in PATH"
+        fi
+    fi
+fi

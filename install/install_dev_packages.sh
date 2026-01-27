@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Basic Development Packages Installation Script
-# Installs basic development tools (nodejs, npm, python3)
+# Installs basic development tools (python3)
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -37,24 +37,19 @@ echo -e "${YELLOW}Detected package manager: $PKG_MANAGER${NC}"
 echo ""
 
 # Development packages - different names for different package managers
+# Note: nodejs/npm are installed via NVM in install_nodejs_nvm.sh, so we only install python here
 if [ "$PKG_MANAGER" = "apt" ]; then
     DEV_PACKAGES=(
-        "nodejs"
-        "npm"
         "python3"
         "python3-pip"
     )
 elif [ "$PKG_MANAGER" = "pacman" ]; then
     DEV_PACKAGES=(
-        "nodejs"
-        "npm"
         "python"
         "python-pip"
     )
 elif [ "$PKG_MANAGER" = "dnf" ]; then
     DEV_PACKAGES=(
-        "nodejs"
-        "npm"
         "python3"
         "python3-pip"
     )
