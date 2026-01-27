@@ -60,6 +60,7 @@ if [ "$PKG_MANAGER" = "apt" ]; then
         "alsa-utils"
         "bluez"
         "xinput"
+        "feh"
     )
 elif [ "$PKG_MANAGER" = "pacman" ]; then
     SCRIPT_PACKAGES=(
@@ -69,6 +70,7 @@ elif [ "$PKG_MANAGER" = "pacman" ]; then
         "alsa-utils"
         "bluez"
         "xorg-xinput"
+        "feh"
     )
 elif [ "$PKG_MANAGER" = "dnf" ]; then
     SCRIPT_PACKAGES=(
@@ -78,6 +80,7 @@ elif [ "$PKG_MANAGER" = "dnf" ]; then
         "alsa-utils"
         "bluez"
         "xorg-xinput"
+        "feh"
     )
 fi
 
