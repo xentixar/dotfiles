@@ -6,7 +6,7 @@ vim.o.modifiable = true
 -- Performance
 opt.lazyredraw = true
 opt.updatetime = 100
-opt.timeoutlen = 300
+opt.timeoutlen = 100  -- Show which-key menu immediately after pressing Space
 
 -- Search
 opt.ignorecase = true

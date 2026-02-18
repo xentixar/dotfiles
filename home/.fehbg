@@ -1,2 +1,2 @@
 #!/bin/sh
-feh --no-fehbg --bg-fill '$HOME/Pictures/' 
+feh --no-fehbg --bg-fill '/home/xentixar/Pictures/nature.jpg' 

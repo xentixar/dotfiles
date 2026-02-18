@@ -1,6 +1,6 @@
-# Advanced C/C++ Neovim Configuration
+# Advanced Neovim Configuration
 
-A highly optimized Neovim configuration built on LazyVim, specifically designed for C/C++ development with advanced features and productivity tools.
+A highly optimized Neovim configuration built on LazyVim, specifically designed for C/C++ and PHP/Laravel development with advanced features and productivity tools.
 
 ## 🚀 Features
 
@@ -11,6 +11,15 @@ A highly optimized Neovim configuration built on LazyVim, specifically designed 
 - **Code Formatting**: Automatic clang-format integration
 - **Code Linting**: clang-tidy integration for code quality
 - **Debugging**: Full debugging support with nvim-dap and LLDB
+
+### PHP & Laravel Development
+- **Intelephense LSP**: Full PHP language server with Laravel stubs
+- **Laravel Integration**: Artisan commands, routes, and related file navigation
+- **Blade Support**: Laravel Blade template syntax highlighting
+- **PHP Refactoring**: PHPActor for advanced refactoring operations
+- **Code Quality**: PHPStan for static analysis, PHP-CS-Fixer for formatting
+- **GitHub Copilot**: AI-powered code completion for PHP and Blade
+- **XDebug Support**: Full debugging support for PHP applications
 
 ### Productivity Tools
 - **Fuzzy Finder**: Telescope integration for file and symbol search
@@ -49,6 +58,9 @@ sudo apt install clang clangd clang-tidy clang-format
 
 # Install LLDB for debugging
 sudo apt install lldb
+
+# Install PHP (for PHP development)
+sudo apt install php php-cli php-mbstring php-xml composer
 
 # Install ripgrep for search
 sudo apt install ripgrep
@@ -109,6 +121,30 @@ sudo apt install git gitk
 - `gr` - Find references
 - `K` - Hover documentation
 
+### PHP & Laravel Specific
+- `<leader>la` - Laravel Artisan commands
+- `<leader>lr` - Laravel Routes viewer
+- `<leader>lm` - Laravel Related files navigation
+- `<leader>pm` - PHP Context menu (refactoring)
+- `<leader>pn` - PHP New class
+- `<leader>pi` - PHP Import class
+- `<leader>pe` - PHP Extract method (visual mode)
+- `gd` - Go to definition
+- `gr` - Find references
+- `K` - Hover documentation
+
+### GitHub Copilot
+- `<Tab>` - Accept Copilot suggestion
+- `<M-]>` (Alt+]) - Next Copilot suggestion
+- `<M-[>` (Alt+[) - Previous Copilot suggestion
+- `<C-]>` (Ctrl+]) - Dismiss Copilot suggestion
+- `<M-CR>` (Alt+Enter) - Open Copilot panel
+
+### Git (LazyGit)
+- `<leader>gg` - Open LazyGit
+- `<leader>gf` - LazyGit for current file
+- `<leader>gc` - LazyGit Config
+
 ### Debugging
 - `<leader>db` - Toggle breakpoint
 - `<leader>dc` - Continue debugging
@@ -137,11 +173,15 @@ sudo apt install git gitk
 ## 🎨 Customization
 
 ### Colorscheme
-The configuration uses Catppuccin theme by default. To change:
+The configuration uses a **hybrid theme**: Tokyo Night syntax highlighting with Gruvbox background (#282828) matching your st terminal. This gives you the best of both worlds:
+- Tokyo Night's beautiful code colors and syntax highlighting
+- Gruvbox's warm background matching your terminal
 
-1. Edit `lua/config/lazy.lua`
-2. Change the `colorscheme` in the install section
-3. Restart Neovim
+To change:
+1. Edit [lua/plugins/tokyonight.lua](lua/plugins/tokyonight.lua)
+2. Modify the `on_colors` function to change background colors
+3. Or replace with a different theme entirely
+4. Restart Neovim
 
 ### Key Mappings
 Customize key mappings in `lua/config/keymaps.lua`
@@ -160,6 +200,7 @@ Add or remove plugins in the `lua/plugins/` directory
 - `lua/config/keymaps.lua` - Key mappings
 - `lua/config/autocmds.lua` - Auto-commands
 - `lua/plugins/cpp.lua` - C/C++ specific plugins
+- `lua/plugins/php.lua` - PHP/Laravel specific plugins
 - `lua/plugins/advanced.lua` - Advanced productivity plugins
 
 ## 🐛 Troubleshooting

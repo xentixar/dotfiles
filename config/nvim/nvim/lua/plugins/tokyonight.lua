@@ -1,16 +1,13 @@
 return {
+  -- Tokyo Night with Gruvbox background (hybrid theme)
   {
     "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
     opts = {
-      -- Your preferred style: 'storm', 'moon', 'night', 'day'
       style = "night",
-      -- Enable transparent background
       transparent = false,
-      -- Make terminal colors compatible
       terminal_colors = true,
-      -- Configure other styling options
       styles = {
         comments = { italic = true },
         keywords = { italic = true, bold = true },
@@ -19,22 +16,27 @@ return {
         sidebars = "dark",
         floats = "dark",
       },
-      -- Adjusting the brightness for dark styles
+      -- Override with Gruvbox background colors
       on_colors = function(colors)
-        colors.bg = "#1a1b26"  -- Slightly darker background
-        colors.bg_dark = "#16161e"
+        colors.bg = "#282828"        -- Gruvbox background
+        colors.bg_dark = "#1d2021"   -- Gruvbox dark background
+        colors.bg_highlight = "#3c3836" -- Gruvbox highlight
+        colors.bg_sidebar = "#282828"
+        colors.bg_statusline = "#282828"
+        colors.bg_float = "#282828"
       end,
-      -- Custom highlights
       on_highlights = function(highlights, colors)
-        -- Better cursor line highlight
-        highlights.CursorLine = { bg = "#292e42" }
-        -- Better selection color
-        highlights.Visual = { bg = "#2E3C64" }
-        -- Better floating window colors
-        highlights.NormalFloat = { bg = colors.bg_dark }
-        highlights.FloatBorder = { fg = colors.blue, bg = colors.bg_dark }
-        -- Status line colors
-        highlights.StatusLine = { fg = colors.fg, bg = colors.bg_dark }
+        -- Use Gruvbox background for all UI elements
+        highlights.Normal = { fg = colors.fg, bg = "#282828" }
+        highlights.NormalFloat = { bg = "#282828" }
+        highlights.NormalNC = { fg = colors.fg, bg = "#282828" }
+        highlights.CursorLine = { bg = "#3c3836" }
+        highlights.Visual = { bg = "#504945" }
+        highlights.FloatBorder = { fg = colors.blue, bg = "#282828" }
+        highlights.StatusLine = { fg = colors.fg, bg = "#282828" }
+        highlights.SignColumn = { bg = "#282828" }
+        highlights.LineNr = { bg = "#282828" }
+        highlights.CursorLineNr = { bg = "#282828" }
       end
     },
     config = function(_, opts)
@@ -42,7 +44,7 @@ return {
     end,
   },
   
-  -- Lualine with Tokyo Night integration
+  -- Lualine with Tokyo Night theme
   {
     "nvim-lualine/lualine.nvim",
     event = "VeryLazy",

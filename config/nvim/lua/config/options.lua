@@ -6,7 +6,7 @@ vim.o.modifiable = true
 -- Performance
 opt.lazyredraw = true
 opt.updatetime = 100
-opt.timeoutlen = 300
+opt.timeoutlen = 100  -- Show which-key menu immediately after pressing Space
 
 -- Search
 opt.ignorecase = true
@@ -96,6 +96,19 @@ opt.hidden = true
 -- Wildmenu
 opt.wildmenu = true
 opt.wildmode = "longest:full,full"
+opt.wildignore = {
+  "*/vendor/*",
+  "*/node_modules/*",
+  "*/.git/*",
+  "*.lock",
+  "*.pyc",
+  "*.o",
+  "*.obj",
+  "*.so",
+  "*.swp",
+  "*.zip",
+  "*~",
+}
 
 -- Status line
 opt.laststatus = 3

@@ -11,15 +11,19 @@ return {
     },
     dependencies = {
       "nvim-lua/plenary.nvim",
-      "akinsho/toggleterm.nvim", -- Ensure toggleterm is available
+      "akinsho/toggleterm.nvim",
     },
     keys = {
-      { "<leader>lg", "<cmd>LazyGit<CR>", desc = "Open LazyGit" },
-      { "<leader>lG", "<cmd>LazyGitConfig<CR>", desc = "LazyGit Config" },
-      { "<leader>lF", "<cmd>LazyGitCurrentFile<CR>", desc = "LazyGit Current File" },
+      { "<leader>gg", "<cmd>LazyGit<CR>", desc = "LazyGit" },
+      { "<leader>gf", "<cmd>LazyGitCurrentFile<CR>", desc = "LazyGit Current File" },
+      { "<leader>gc", "<cmd>LazyGitConfig<CR>", desc = "LazyGit Config" },
     },
     config = function()
-      -- Configuration is handled by the plugin defaults
+      vim.g.lazygit_floating_window_winblend = 0
+      vim.g.lazygit_floating_window_scaling_factor = 0.9
+      vim.g.lazygit_floating_window_border_chars = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }
+      vim.g.lazygit_floating_window_use_plenary = 1
+      vim.g.lazygit_use_neovim_remote = 1
     end,
   },
 }

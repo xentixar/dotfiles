@@ -76,10 +76,8 @@ map("n", "<leader>fh", ":Telescope help_tags<CR>", opts)
 -- TreeSitter
 map("n", "<leader>ts", ":TSBufToggle highlight<CR>", opts)
 
--- Git
-map("n", "<leader>gs", ":Git<CR>", opts)
-map("n", "<leader>gc", ":Git commit<CR>", opts)
-map("n", "<leader>gp", ":Git push<CR>", opts)
+-- Git - Use LazyGit instead (<leader>gg)
+-- Git shortcuts removed in favor of LazyGit integration
 
 -- Terminal - Enhanced features
 -- Toggle terminal in different locations

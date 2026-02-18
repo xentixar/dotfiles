@@ -10,6 +10,8 @@ map("n", "<C-l>", "<C-w>l", opts)
 -- Better buffer navigation
 map("n", "<S-l>", ":bnext<CR>", opts)
 map("n", "<S-h>", ":bprevious<CR>", opts)
+map("n", "<leader>bd", ":bdelete<CR>", opts) -- Close current buffer
+map("n", "<leader>x", ":bdelete<CR>", opts)  -- Alternative: close buffer
 
 -- Better search
 map("n", "n", "nzzzv", opts)
@@ -20,6 +22,8 @@ map("n", "#", "#zzzv", opts)
 -- Better indentation
 map("v", "<", "<gv", opts)
 map("v", ">", ">gv", opts)
+map("v", "<Tab>", ">gv", opts)
+map("v", "<S-Tab>", "<gv", opts)
 
 -- Move lines
 map("n", "<A-j>", ":m .+1<CR>==", opts)
@@ -68,18 +72,32 @@ map("n", "<leader>ca", vim.lsp.buf.code_action, opts)
 map("n", "<leader>lf", vim.lsp.buf.format, opts)
 
 -- Telescope mappings
+map("n", "<leader><leader>", ":Telescope find_files<CR>", opts) -- Double space for quick file search
 map("n", "<leader>ff", ":Telescope find_files<CR>", opts)
 map("n", "<leader>fg", ":Telescope live_grep<CR>", opts)
 map("n", "<leader>fb", ":Telescope buffers<CR>", opts)
 map("n", "<leader>fh", ":Telescope help_tags<CR>", opts)
 
+-- Telescope with vendor search (includes vendor directories)
+map("n", "<leader>fv", function()
+  require('telescope.builtin').find_files({
+    file_ignore_patterns = {}, -- Clear ignore patterns to search vendor
+    prompt_title = "Find Files (including vendor)",
+  })
+end, { noremap = true, silent = true, desc = "Find files including vendor" })
+
+map("n", "<leader>fG", function()
+  require('telescope.builtin').live_grep({
+    file_ignore_patterns = {}, -- Clear ignore patterns to search vendor
+    prompt_title = "Live Grep (including vendor)",
+  })
+end, { noremap = true, silent = true, desc = "Grep including vendor" })
+
 -- TreeSitter
 map("n", "<leader>ts", ":TSBufToggle highlight<CR>", opts)
 
--- Git
-map("n", "<leader>gs", ":Git<CR>", opts)
-map("n", "<leader>gc", ":Git commit<CR>", opts)
-map("n", "<leader>gp", ":Git push<CR>", opts)
+-- Git - Use LazyGit instead (<leader>lg)
+-- Git shortcuts removed in favor of LazyGit integration
 
 -- Terminal - Enhanced features
 -- Toggle terminal in different locations
@@ -140,3 +158,13 @@ map("n", "<leader>rx", "<C-w>x", opts)                -- Swap current with next
 -- Quit all
 map("n", "<leader>qa", ":qa<CR>", { desc = "Quit all" })
 map("v", "<leader>qa", ":qa<CR>", { desc = "Quit all" })
+
+-- Copilot Tab behavior: accept suggestion if available, otherwise default Tab behavior
+map("i", "<Tab>", function()
+  local copilot = require("copilot.suggestion")
+  if copilot.is_visible() then
+    copilot.accept()
+  else
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, false, true), "n", false)
+  end
+end, { noremap = true, silent = true, desc = "Accept Copilot or Tab" })

@@ -231,6 +231,14 @@ return {
       "nvim-telescope/telescope-file-browser.nvim",
     },
     opts = {
+      defaults = {
+        file_ignore_patterns = {
+          "node_modules",
+          "vendor",
+          ".git/",
+          "%.lock",
+        },
+      },
       extensions = {
         fzf = {
           fuzzy = true,

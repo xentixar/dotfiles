@@ -23,7 +23,7 @@ require("lazy").setup({
     
     -- Essential tools
     { import = "lazyvim.plugins.extras.ui.mini-animate" },
-    { import = "lazyvim.plugins.extras.ui.edgy" },
+    -- { import = "lazyvim.plugins.extras.ui.edgy" }, -- Disabled to avoid conflicts
     { import = "lazyvim.plugins.extras.ui.treesitter-context" },
     
     -- Custom plugins
