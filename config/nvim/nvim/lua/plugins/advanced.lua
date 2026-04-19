@@ -174,18 +174,6 @@ return {
   {
     "kylechui/nvim-surround",
     opts = {
-      keymaps = {
-        insert = "<C-g>s",
-        insert_line = "<C-g>S",
-        normal = "ys",
-        normal_cur = "yss",
-        normal_line = "yS",
-        normal_cur_line = "ySS",
-        visual = "S",
-        visual_line = "gS",
-        delete = "ds",
-        change = "cs",
-      },
       aliases = {
         ["a"] = ">",
         ["b"] = ")",
@@ -339,7 +327,13 @@ return {
     "nvim-tree/nvim-tree.lua",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
+      sync_root_with_cwd = true,
+      respect_buf_cwd = true,
       sort_by = "case_sensitive",
+      update_focused_file = {
+        enable = true,
+        update_root = true,
+      },
       view = {
         width = 30,
       },

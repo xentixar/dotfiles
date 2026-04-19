@@ -13,6 +13,7 @@ if [ -n "$device_name" ]; then
     
     echo "$output"
 else
-    echo ""
+    # Non-empty so slstatus run_command does not fall back to unknown_str
+    echo "-"
 fi
 

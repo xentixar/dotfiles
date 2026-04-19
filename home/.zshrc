@@ -40,10 +40,12 @@ bindkey '^[[Z' undo                               # shift + tab undo last action
 autoload -Uz compinit
 
 # Smart completion caching (rebuild only once a day)
-if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
-    compinit -d ~/.cache/zcompdump
+zcompdump_file="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
+mkdir -p "${zcompdump_file:h}"
+if [[ -n "${zcompdump_file}"(#qN.mh+24) ]]; then
+    compinit -d "${zcompdump_file}"
 else
-    compinit -C -d ~/.cache/zcompdump
+    compinit -C -d "${zcompdump_file}"
 fi
 
 zstyle ':completion:*:*:*:*:*' menu select
@@ -483,14 +485,19 @@ reload() {
 # enable auto-suggestions based on the history
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
     . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-    # change suggestion color
+elif [ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
+    . /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [ -f "${HOME}/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh" ]; then
+    . "${HOME}/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh"
+fi
+
+if typeset -f _zsh_autosuggest_start >/dev/null 2>&1; then
     ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
-    # accept suggestion with Ctrl+Space or Ctrl+F
+    ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+    ZSH_AUTOSUGGEST_USE_ASYNC=1
+    # Accept suggestion with Ctrl+Space (if supported) or Right Arrow.
     bindkey '^ ' autosuggest-accept
-    bindkey '^F' forward-word
-    # use more strategies for suggestions
-    # ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-    ZSH_AUTOSUGGEST_STRATEGY=(history)
+    bindkey '^[[C' autosuggest-accept
 fi
 
 # enable command-not-found if installed
@@ -578,3 +585,5 @@ export AWS_PROFILE=stab_aws
 export ANDROID_HOME=$HOME/Android/Sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+export PATH=$JAVA_HOME/bin:$PATH

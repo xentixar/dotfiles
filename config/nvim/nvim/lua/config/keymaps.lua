@@ -104,7 +104,16 @@ map("n", "<leader>tc", function()
 end, opts)                                                                -- Send command to terminal
 
 -- Quick file operations
--- map("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
+map("n", "<leader>e", function()
+  -- Prefer LazyVim's Explorer picker when available.
+  if _G.Snacks and _G.Snacks.explorer then
+    _G.Snacks.explorer()
+    return
+  end
+
+  -- Fallback for setups where Snacks explorer is unavailable.
+  vim.cmd("NvimTreeFindFileToggle")
+end, { noremap = true, silent = true, desc = "Open Explorer" })
 map("n", "<leader>o", ":NvimTreeFocus<CR>", opts)
 
 -- Pane management

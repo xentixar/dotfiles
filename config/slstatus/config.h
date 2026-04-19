@@ -64,13 +64,19 @@ static const char unknown_str[] = "n/a";
  * wifi_perc           WiFi signal in percent          interface name (wlan0)
  */
 
+/* Format: ipv6 | W: ( % at ESSID) ipv4 | E: down/ip | state perc% | disk | load | ram_used | ram_total | datetime (no labels) */
+/* Network block via script so no wlan0 dependency; works with ethernet-only or any wlan/wlp interface */
 static const struct arg args[] = {
     /* function         format                      argument */
-    { cpu_perc,         " CPU %s%%",                NULL },
-    { ram_perc,         " | RAM %s%%",              NULL },
-    { battery_perc,     " | BAT %s%%",              "BAT1" },
-    { run_command,      " | VOL %s",                "/usr/local/bin/volume" },
-    { run_command,      " | %s",                    "iwgetid -r" },
-    { datetime,         " | %s",                    "%a %d %b %H:%M" },
+    { run_command,      "%s",                       "/home/xentixar/.config/slstatus/scripts/network-status.sh" },
+    { run_command,      " | %s",                 "/home/xentixar/.config/slstatus/scripts/bluetooth.sh" },
+    { battery_state,    " | %s ",                   "BAT1" },
+    { battery_perc,     "%s%%",                     "BAT1" },
+    { disk_used,        " | %s",                    "/" },
+    { load_avg,         " | %s",                    NULL },
+    { ram_used,         " | %s",                    NULL },
+    { ram_total,        " | %s",                    NULL },
+    { datetime,         " | %s",                    "%Y-%m-%d %H:%M:%S" },
+    { run_command,      " | %s",                    "/home/xentixar/.config/slstatus/scripts/wireguard.sh" },
 };
 

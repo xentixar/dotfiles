@@ -1,25 +1,31 @@
 /* See LICENSE file for copyright and license details. */
 
-/* appearance */
+/* appearance - i3bar style */
 static const unsigned int borderpx = 1; /* border pixel of windows */
 static const unsigned int snap = 32;    /* snap pixel */
 static const int showbar = 1;           /* 0 means no bar */
 static const int topbar = 0;            /* 0 means bottom bar */
-static const float baralpha = 0.85;     /* bar transparency (0.0 - 1.0) */
-static const int barpadding = 3;        /* extra padding for bar text */
-static const char *fonts[] = {"monospace:size=14"};
-static const char dmenufont[] = "monospace:size=14";
-/* Neutral dark colors that work with most wallpapers */
-static const char col_bg[]       = "#1a1a1a";  /* Dark background */
-static const char col_fg[]       = "#e0e0e0";  /* Light foreground */
-static const char col_border[]   = "#333333";  /* Border color */
-static const char col_sel_bg[]   = "#2d2d2d";  /* Selected background */
-static const char col_sel_fg[]   = "#ffffff";  /* Selected foreground */
-static const char col_cyan[]     = "#4a9eff";  /* Accent color */
+static const float baralpha = 1.0;      /* bar transparency (i3bar is opaque) */
+static const int barpadding = 1;        /* extra padding (like i3 bar ~19px) */
+/* i3bar default font: DejaVu Sans Mono 10 */
+static const char *fonts[] = {"DejaVu Sans Mono:size=8"};
+static const char dmenufont[] = "DejaVu Sans Mono:size=8";
+/* i3bar default colors */
+static const char col_bg[]       = "#000000";  /* bar background (i3bar default) */
+static const char col_fg[]       = "#ceecee";  /* statusline / text (i3bar default) */
+static const char col_border[]   = "#000000";  /* border matches background */
+static const char col_sel_bg[]   = "#285577";  /* focused workspace (i3 default blue) */
+static const char col_sel_fg[]   = "#ffffff";  /* focused workspace text */
+static const char col_cyan[]     = "#285577";  /* accent / separator tone */
+/* i3bar-style status: green = available, red = unavailable */
+static const char col_good[]     = "#00ff00";  /* available (IPv4, IPv6, WiFi, E) */
+static const char col_bad[]      = "#ff0000";  /* unavailable */
 static const char *colors[][3] = {
     /*               fg         bg         border   */
     [SchemeNorm] = {col_fg, col_bg, col_border},
     [SchemeSel]  = {col_sel_fg, col_sel_bg, col_cyan},
+    [SchemeGood] = {col_good, col_bg, col_border},
+    [SchemeBad]  = {col_bad, col_bg, col_border},
 };
 
 /* tagging */
@@ -94,6 +100,10 @@ static const Key keys[] = {
     {MODKEY | ShiftMask, XK_F12, spawn, {.v = increaseBrightness}},
     {MODKEY | ShiftMask, XK_F11, spawn, {.v = decreaseBrightness}},
     {0, XK_Print, spawn, SHCMD("/usr/local/bin/shotclip")},
+    {MODKEY, XK_w, spawn,
+     SHCMD("/home/xentixar/.config/dwm/scripts/wg-quick-dmenu.sh up")},
+    {MODKEY | ShiftMask, XK_w, spawn,
+     SHCMD("/home/xentixar/.config/dwm/scripts/wg-quick-dmenu.sh down")},
     {MODKEY, XK_b, togglebar, {0}},
     {MODKEY, XK_j, focusstack, {.i = +1}},
     {MODKEY, XK_k, focusstack, {.i = -1}},

@@ -99,6 +99,27 @@ map("n", "<leader>ts", ":TSBufToggle highlight<CR>", opts)
 -- Git - Use LazyGit instead (<leader>lg)
 -- Git shortcuts removed in favor of LazyGit integration
 
+-- LazyGit integration with ToggleTerm
+local Terminal = require('toggleterm.terminal').Terminal
+local lazygit = Terminal:new({
+  cmd = "lazygit",
+  dir = "git_dir",
+  direction = "float",
+  float_opts = {
+    border = "curved",
+  },
+  on_open = function(term)
+    vim.cmd("startinsert!")
+    vim.api.nvim_buf_set_keymap(term.bufnr, "t", "<Esc>", "<cmd>close<CR>", {noremap = true, silent = true})
+  end,
+})
+
+function _lazygit_toggle()
+  lazygit:toggle()
+end
+
+map("n", "<leader>lg", "<cmd>lua _lazygit_toggle()<CR>", { noremap = true, silent = true, desc = "Toggle LazyGit" })
+
 -- Terminal - Enhanced features
 -- Toggle terminal in different locations
 map("n", "<leader>tt", ":ToggleTerm<CR>", opts)                           -- Default toggle
@@ -124,7 +145,16 @@ map("n", "<leader>tc", function()
 end, opts)                                                                -- Send command to terminal
 
 -- Quick file operations
--- map("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
+map("n", "<leader>e", function()
+  -- Prefer LazyVim's Explorer picker when available.
+  if _G.Snacks and _G.Snacks.explorer then
+    _G.Snacks.explorer()
+    return
+  end
+
+  -- Fallback for setups where Snacks explorer is unavailable.
+  vim.cmd("NvimTreeFindFileToggle")
+end, { noremap = true, silent = true, desc = "Open Explorer" })
 map("n", "<leader>o", ":NvimTreeFocus<CR>", opts)
 
 -- Pane management
@@ -168,3 +198,19 @@ map("i", "<Tab>", function()
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, false, true), "n", false)
   end
 end, { noremap = true, silent = true, desc = "Accept Copilot or Tab" })
+
+-- Copilot Chat Keymaps (configured in plugins/copilot-chat.lua)
+-- <leader>cc - Toggle Copilot Chat
+-- <leader>ce - Explain code
+-- <leader>ct - Generate tests
+-- <leader>cr - Review code
+-- <leader>cR - Refactor code
+-- <leader>cf - Fix code
+-- <leader>co - Optimize code
+-- <leader>cd - Generate documentation
+-- <leader>cD - Fix diagnostic issues
+-- <leader>cm - Generate commit message
+-- <leader>cM - Generate commit message for staged files
+-- <leader>ci - Quick chat prompt
+-- <leader>cv - Visual mode chat (with selected text)
+-- <leader>cI - Inline chat in visual mode

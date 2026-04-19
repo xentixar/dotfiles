@@ -59,7 +59,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeGood, SchemeBad }; /* color schemes (^g^ ^r^ ^d^ in status) */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
        NetWMWindowTypeDialog, NetClientList, NetLast }; /* EWMH atoms */
@@ -161,6 +161,7 @@ static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
 static Monitor *dirtomon(int dir);
+static int drawstatusbar(Monitor *m, int bh, char *text);
 static void drawbar(Monitor *m);
 static void drawbars(void);
 static void enternotify(XEvent *e);
@@ -236,7 +237,8 @@ static void zoom(const Arg *arg);
 
 /* variables */
 static const char broken[] = "broken";
-static char stext[256];
+static char stext[1024];
+static int statusw; /* width of status text (excluding ^g^/^r^/^d^ codes) */
 static int screen;
 static int sw, sh;           /* X display screen geometry width, height */
 static int bh;               /* bar height */
@@ -441,7 +443,7 @@ buttonpress(XEvent *e)
 			arg.ui = 1 << i;
 		} else if (ev->x < x + TEXTW(selmon->ltsymbol))
 			click = ClkLtSymbol;
-		else if (ev->x > selmon->ww - (int)TEXTW(stext))
+		else if (ev->x > selmon->ww - statusw)
 			click = ClkStatusText;
 		else
 			click = ClkWinTitle;
@@ -695,6 +697,71 @@ dirtomon(int dir)
 	return m;
 }
 
+/* Draw status bar with ^g^ (green/good), ^r^ (red/bad), ^d^ (default) color codes */
+int
+drawstatusbar(Monitor *m, int bh, char *text)
+{
+	char *p, *q;
+	int w, total = 0;
+	int cur = SchemeNorm;
+	static char buf[1024];
+
+	if (!text || !*text)
+		return 0;
+	strncpy(buf, text, sizeof(buf) - 1);
+	buf[sizeof(buf) - 1] = '\0';
+	p = buf;
+
+	/* first pass: compute total width */
+	while (*p) {
+		q = strchr(p, '^');
+		if (!q) {
+			total += TEXTW(p) - lrpad;
+			break;
+		}
+		*q = '\0';
+		total += TEXTW(p) - lrpad;
+		*q = '^';
+		if (q[1] && q[2] == '^')
+			p = q + 3;
+		else
+			p = q + 1;
+	}
+	total += 2; /* padding */
+	w = m->ww - total;
+
+	/* second pass: draw segments */
+	p = buf;
+	cur = SchemeNorm;
+	while (*p) {
+		q = strchr(p, '^');
+		if (!q) {
+			drw_setscheme(drw, scheme[cur]);
+			drw_text(drw, w, 0, TEXTW(p) - lrpad, bh, 0, p, 0);
+			break;
+		}
+		*q = '\0';
+		if (p < q) {
+			drw_setscheme(drw, scheme[cur]);
+			drw_text(drw, w, 0, TEXTW(p) - lrpad, bh, 0, p, 0);
+			w += TEXTW(p) - lrpad;
+		}
+		*q = '^';
+		if (q[1] == 'g')
+			cur = SchemeGood;
+		else if (q[1] == 'r')
+			cur = SchemeBad;
+		else if (q[1] == 'd')
+			cur = SchemeNorm;
+		if (q[1] && q[2] == '^')
+			p = q + 3;
+		else
+			p = q + 1;
+	}
+	drw_setscheme(drw, scheme[SchemeNorm]);
+	return total;
+}
+
 void
 drawbar(Monitor *m)
 {
@@ -709,9 +776,8 @@ drawbar(Monitor *m)
 
 	/* draw status first so it can be overdrawn by tags later */
 	if (m == selmon) { /* status is only drawn on selected monitor */
-		drw_setscheme(drw, scheme[SchemeNorm]);
-		tw = TEXTW(stext) - lrpad + 2; /* 2px right padding */
-		drw_text(drw, m->ww - tw, 0, tw, bh, 0, stext, 0);
+		tw = drawstatusbar(m, bh, stext);
+		statusw = tw;
 	}
 
 	for (c = m->clients; c; c = c->next) {

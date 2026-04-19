@@ -1,0 +1,10 @@
+# Passwordless wg-quick for dwm keybindings (install to /etc/sudoers.d/).
+#   sudo install -o root -g root -m 0440 99-wg-quick-nopasswd /etc/sudoers.d/99-wg-quick-nopasswd
+#   sudo visudo -cf /etc/sudoers.d/99-wg-quick-nopasswd
+#
+# Edit the username if this file is reused on another account.
+#
+# ls: /etc/wireguard is usually 0700; wg-quick-dmenu.sh lists *.conf via sudo.
+xentixar ALL=(root) NOPASSWD: /usr/bin/ls -1 -- /etc/wireguard
+xentixar ALL=(root) NOPASSWD: /usr/bin/wg-quick up *
+xentixar ALL=(root) NOPASSWD: /usr/bin/wg-quick down *
